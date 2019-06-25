@@ -1,5 +1,6 @@
 package dev.kourosh.baseapp
 
+import android.app.Application
 import android.content.Context
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -13,7 +14,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.google.android.material.snackbar.Snackbar
 import dev.kourosh.baseapp.enums.MessageType
+import io.github.inflationx.calligraphy3.CalligraphyConfig
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.calligraphy3.CalligraphyUtils
+import io.github.inflationx.viewpump.ViewPump
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -76,4 +80,16 @@ object GZip {
 			null
 		}
 	}
+}
+
+fun Application.initApp(){
+	ViewPump.init(
+		ViewPump.builder().addInterceptor(
+			CalligraphyInterceptor(
+				CalligraphyConfig.Builder().setDefaultFontPath(
+					getString(R.string.isRegular)
+				).setFontAttrId(R.attr.fontPath).build()
+			)
+		).build()
+	)
 }
