@@ -57,7 +57,6 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel> : A
         var showingDialog = false
         vm.networkError.observe(this, Observer {
             if (it == true && !showingDialog) {
-                onNetworkError()
                 showingDialog = true
                 dialog.onRetryClickListener = View.OnClickListener {
                     tryAgain()
@@ -75,7 +74,6 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel> : A
         })
     }
 
-    abstract fun onNetworkError()
     private fun bind() {
         binding = DataBindingUtil.setContentView(this, getLayoutID())
         binding.lifecycleOwner = this
