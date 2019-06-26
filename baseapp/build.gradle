@@ -1,9 +1,6 @@
-ext {
-    liveData = '2.0.0'
-    appcompat = '1.0.2'
-    coroutines = '1.2.1'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.KouroshMsv.BaseAndroid'
 
-}
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -34,7 +31,12 @@ android {
         enabled = true
     }
 }
+ext {
+    liveData = '2.0.0'
+    appcompat = '1.0.2'
+    coroutines = '1.2.1'
 
+}
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"
