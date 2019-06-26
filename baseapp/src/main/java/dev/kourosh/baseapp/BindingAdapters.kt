@@ -1,34 +1,19 @@
 package dev.kourosh.baseapp
 
 import android.view.View
+import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.facebook.shimmer.ShimmerFrameLayout
-import me.dm7.barcodescanner.zbar.ZBarScannerView
-import me.dm7.barcodescanner.zbar.ZBarScannerView.ResultHandler
+import com.squareup.picasso.Picasso
 
-@BindingAdapter("onResultReceive")
-fun ZBarScannerView.setResultHandler2(resultHandler: ResultHandler) {
-    setResultHandler(resultHandler)
-}
 
-/*@BindingAdapter("imageUrl")
+@BindingAdapter("imageUrl")
 fun ImageView.setImageUrl(imageUrl: String?) {
     Picasso.get()
         .load(imageUrl)
         .into(this)
 }
 
-@BindingAdapter("startShimmer")
-fun ShimmerFrameLayout.setState(isStart: Boolean) {
-    if (isStart) {
-        visibleWithAnimation()
-        startShimmer()
-    } else {
-        invisibleWithAnimation()
-        stopShimmer()
-    }
-}
-*/
 
 @BindingAdapter("visibleGone")
 fun View.setVisibleGone(visible: Boolean) {
