@@ -35,7 +35,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"
     implementation "androidx.core:core-ktx:${appcompat}"
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.github.KouroshMsv.BaseAndroid:basedomain:0.0.8'
+    implementation project(path: ':basedomain')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines}"
 }
