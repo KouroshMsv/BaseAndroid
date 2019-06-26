@@ -1,5 +1,5 @@
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.KouroshMsv.BaseAndroid'
+group='com.github.KouroshMsv'
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
