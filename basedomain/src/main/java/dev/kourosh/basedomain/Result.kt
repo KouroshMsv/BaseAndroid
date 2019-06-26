@@ -1,8 +1,5 @@
 package dev.kourosh.basedomain
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.withContext
 
 sealed class Result<out T : Any> {
     class Success<out T : Any>(val data: T) : Result<T>()
