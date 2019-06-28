@@ -17,9 +17,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.FragmentManager
 import kotlinx.coroutines.*
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 fun View.gone() {
@@ -236,6 +238,7 @@ fun String.emptyOrZeroToNull(): String? {
 }
 
 
+
 fun String.numP2E(reverse: Boolean = false): String {
     var str = this
     val chars = arrayOf(
@@ -260,4 +263,11 @@ fun String.numP2E(reverse: Boolean = false): String {
     }
     //    Log.v("numE2P", str);
     return str
+}
+fun ObservableBoolean.start() {
+    set(true)
+}
+
+fun ObservableBoolean.stop() {
+    set(false)
 }

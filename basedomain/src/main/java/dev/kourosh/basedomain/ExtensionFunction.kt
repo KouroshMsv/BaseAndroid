@@ -1,6 +1,8 @@
 package dev.kourosh.basedomain
 
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 fun logV(any: Any) = L.v(any.toString())
@@ -104,3 +106,12 @@ inline fun <T : Any, R : Any> Result<T>.map(success: (data: T) -> R): Result<R> 
         }
     }
 }
+
+fun currentIso8601() =
+    SimpleDateFormat(
+        "yyyy/MM/dd HH:mm",
+        Locale.getDefault()
+    ).format(Date(System.currentTimeMillis()))!!
+
+fun generateUUID() = UUID.randomUUID()!!.toString()
+
