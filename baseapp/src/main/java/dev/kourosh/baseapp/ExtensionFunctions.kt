@@ -19,10 +19,14 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.FragmentManager
+import dev.kourosh.basedomain.logE
 import kotlinx.coroutines.*
+import dev.kourosh.basedomain.ErrorCode
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
+import dev.kourosh.basedomain.Result
 import java.util.*
+import java.util.regex.Pattern
+import kotlin.Result.Companion.success
 
 fun View.gone() {
     if (isVisible())
@@ -131,7 +135,10 @@ fun String.moneyFormat(): String {
         "0"
     }
 }
-
+fun String.isPhoneNumber(): Boolean {
+    val pattern = "(09)\\d\\d\\d\\d\\d\\d\\d\\d\\d"
+    return Pattern.matches(pattern, this)
+}
 val Long.moneyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
 
 val Double.moneyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
@@ -270,4 +277,24 @@ fun ObservableBoolean.start() {
 
 fun ObservableBoolean.stop() {
     set(false)
+}
+
+
+suspend fun <T : Any> Result<T>.parseOnMain(loading:ObservableBoolean,success: (data: T) -> Unit,error: (message: String, errorCode: ErrorCode) -> Unit) {
+    val result = this
+    when (result) {
+        is Result.Success -> {
+            loading.stop()
+            withContext(Dispatchers.Main) {
+                success(result.data)
+            }
+        }
+        is Result.Error -> {
+            loading.stop()
+            logE("""message: [${result.message}]|statusCode: [${result.errorCode}""".trimMargin())
+            withContext(Dispatchers.Main) {
+                error(result.message, result.errorCode)
+            }
+        }
+    }
 }
