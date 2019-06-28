@@ -14,7 +14,6 @@ import dev.kourosh.baseapp.dialogs.NetworkErrorDialog
 import dev.kourosh.baseapp.enums.MessageType
 import dev.kourosh.baseapp.hideKeyboard
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
-import org.greenrobot.eventbus.EventBus
 
 
 abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel> : AppCompatActivity() {
@@ -105,14 +104,5 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel> : A
 
     abstract fun tryAgain()
 
-    public override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    public override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
 
 }
