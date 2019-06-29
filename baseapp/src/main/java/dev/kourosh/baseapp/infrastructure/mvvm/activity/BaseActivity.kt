@@ -55,7 +55,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel> : A
         val dialog = NetworkErrorDialog()
         var showingDialog = false
         vm.networkError.observe(this, Observer {
-            if (it == true && !showingDialog) {
+            if (it != null && !showingDialog) {
                 showingDialog = true
                 dialog.onRetryClickListener = View.OnClickListener {
                     tryAgain()
