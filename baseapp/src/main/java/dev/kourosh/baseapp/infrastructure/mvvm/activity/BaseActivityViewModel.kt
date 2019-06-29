@@ -10,10 +10,10 @@ abstract class BaseActivityViewModel : ViewModel(),LifecycleObserver,  BaseView 
     val successMessage = SingleLiveEvent<String>()
     val infoMessage = SingleLiveEvent<String>()
     val warningMessage = SingleLiveEvent<String>()
-    val networkError = SingleLiveEvent<Boolean>()
     val hideKeyboard = SingleLiveEvent<Boolean>()
-    fun showNetworkError() {
-        networkError.value = true
+    val networkError = SingleLiveEvent<Boolean?>()
+    open fun showNetworkError(showCancel: Boolean = true) {
+        networkError.value = showCancel
     }
 
     override fun showInfo(message: String) {

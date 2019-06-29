@@ -12,7 +12,7 @@ abstract class BaseFragmentViewModel : ViewModel(), LifecycleObserver, BaseView 
     val warningMessage = SingleLiveEvent<String>()
     val hideKeyboard=SingleLiveEvent<Boolean>()
     val networkError = SingleLiveEvent<Boolean?>()
-    fun showNetworkError(showCancel: Boolean = true) {
+   open fun showNetworkError(showCancel: Boolean = true) {
         networkError.value = showCancel
     }
 
