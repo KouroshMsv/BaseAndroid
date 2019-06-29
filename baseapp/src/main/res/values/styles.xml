@@ -3,6 +3,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/baseAppPrimary</item>
+        <item name="colorPrimaryDark">@color/baseAppPrimaryDark</item>
+        <item name="colorAccent">@color/baseAppAccent</item>
         <item name="shimmer_direction">right_to_left</item>
         <item name="android:textColor">@color/black</item>
     </style>
