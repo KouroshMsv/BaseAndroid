@@ -4,9 +4,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
 import dev.kourosh.baseapp.SingleLiveEvent
 import dev.kourosh.baseapp.infrastructure.mvvm.BaseView
-import org.koin.core.KoinComponent
 
-abstract class BaseActivityViewModel : ViewModel(), KoinComponent,LifecycleObserver,  BaseView {
+abstract class BaseActivityViewModel : ViewModel(),LifecycleObserver,  BaseView {
     val errorMessage = SingleLiveEvent<String>()
     val successMessage = SingleLiveEvent<String>()
     val infoMessage = SingleLiveEvent<String>()

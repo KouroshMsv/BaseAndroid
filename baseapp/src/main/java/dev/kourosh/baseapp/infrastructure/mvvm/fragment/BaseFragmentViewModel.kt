@@ -1,15 +1,11 @@
 package dev.kourosh.baseapp.infrastructure.mvvm.fragment
 
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import dev.kourosh.baseapp.SingleLiveEvent
 import dev.kourosh.baseapp.infrastructure.mvvm.BaseView
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 
-abstract class BaseFragmentViewModel : ViewModel(), KoinComponent, LifecycleObserver, BaseView {
+abstract class BaseFragmentViewModel : ViewModel(), LifecycleObserver, BaseView {
     val errorMessage = SingleLiveEvent<String>()
     val successMessage = SingleLiveEvent<String>()
     val infoMessage = SingleLiveEvent<String>()
