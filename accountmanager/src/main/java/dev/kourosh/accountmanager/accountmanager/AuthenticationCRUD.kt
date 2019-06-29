@@ -2,14 +2,17 @@ package dev.kourosh.accountmanager.accountmanager
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import dev.kourosh.accountmanager.UserDataKeys
 import dev.kourosh.basedomain.ErrorCode
 import dev.kourosh.basedomain.Result
+import dev.kourosh.basedomain.logE
 import kotlinx.coroutines.CompletableDeferred
 
-class AuthenticationCRUD(context: Context,private val accountType: String,private val authTokenType: String = "FullAccess") {
+class AuthenticationCRUD(private val context: Context,private val accountType: String,private val authTokenType: String = "FullAccess") {
     private val accountManager = AccountManager.get(context)!!
 
     fun createOrUpdateAccount(
@@ -137,7 +140,20 @@ class AuthenticationCRUD(context: Context,private val accountType: String,privat
             }
         }
     }
-
+    fun deleteAccount(mobile: String) {
+        val account=getAccount(mobile)
+        try {
+            if ( account != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    accountManager.removeAccount(account,context as Activity,null,null )
+                }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    accountManager.removeAccount(account,null,null )
+                }
+            }
+        } catch (e: Exception) {
+            logE(e.message.toString())
+        }
+    }
     /*fun getToken(userName: String) = Single.create(SingleOnSubscribe<String> {
         val account = getAccount(userName)
 
