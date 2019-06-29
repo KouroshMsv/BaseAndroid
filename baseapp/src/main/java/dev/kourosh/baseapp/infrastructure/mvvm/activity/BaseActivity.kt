@@ -57,19 +57,22 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel> : A
         vm.networkError.observe(this, Observer {
             if (it != null && !showingDialog) {
                 showingDialog = true
+                dialog.showCancel=it
                 dialog.onRetryClickListener = View.OnClickListener {
                     tryAgain()
-                    vm.networkError.value = false
+                    vm.networkError.value = null
                     showingDialog = false
                     dialog.dismiss()
                 }
                 dialog.onCancelClickListener = View.OnClickListener {
-                    vm.networkError.value = false
+                    vm.networkError.value = null
                     showingDialog = false
                     dialog.dismiss()
                 }
                 dialog.show(supportFragmentManager)
             }
+
+
         })
     }
 
