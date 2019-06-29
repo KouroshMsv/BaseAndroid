@@ -1,9 +1,12 @@
 package dev.kourosh.baseapp
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
+import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.VibrationEffect
@@ -12,6 +15,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import dev.kourosh.baseapp.enums.MessageType
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -40,6 +44,12 @@ fun Context.vibrate(millisecond: Long = 200) {
 	} else {
 		vibrator.vibrate(millisecond)
 	}
+}
+fun Fragment.openLink(url: String) {
+	startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+}
+fun Activity.openLink(url: String) {
+	startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }
 
 fun showSnackBar(view: View, context: Context, message: String, type: MessageType, duration: Int = Snackbar.LENGTH_LONG) {
