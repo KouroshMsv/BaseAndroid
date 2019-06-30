@@ -3,7 +3,6 @@ package dev.kourosh.basedomain
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.Result.Companion.success
 
 
 fun logV(any: Any) = L.v(any.toString())
