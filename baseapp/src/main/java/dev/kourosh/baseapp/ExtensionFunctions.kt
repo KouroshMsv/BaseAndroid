@@ -16,17 +16,17 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.FragmentManager
+import dev.kourosh.basedomain.ErrorCode
+import dev.kourosh.basedomain.Result
 import dev.kourosh.basedomain.logE
 import kotlinx.coroutines.*
-import dev.kourosh.basedomain.ErrorCode
 import java.text.NumberFormat
-import dev.kourosh.basedomain.Result
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.Result.Companion.success
 
 fun View.gone() {
     if (isVisible())
@@ -135,10 +135,12 @@ fun String.moneyFormat(): String {
         "0"
     }
 }
+
 fun String.isPhoneNumber(): Boolean {
     val pattern = "(09)\\d\\d\\d\\d\\d\\d\\d\\d\\d"
     return Pattern.matches(pattern, this)
 }
+
 val Long.moneyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
 
 val Double.moneyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
@@ -193,22 +195,23 @@ fun ByteArray.decodeBase64() = android.util.Base64.decode(this, android.util.Bas
 fun String.encodeBase64() = this.toByteArray().encodeBase64()
 fun String.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 
-fun SpannableStringBuilder.appendGray(grayString: String, context: Context) {
-    val warmGrayTwo = ContextCompat.getColor(context, R.color.warm_grey)
+fun SpannableStringBuilder.appendWithColor(
+    string: String,
+    context: Context, @ColorRes colorId: Int = R.color.warm_grey
+) {
+    val color = ContextCompat.getColor(context, colorId)
     val start = length
-    append(grayString)
-    setSpan(ForegroundColorSpan(warmGrayTwo), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    append(string)
+    setSpan(ForegroundColorSpan(color), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 }
 
-fun SpannableStringBuilder.appendBold(boldString: String) {
+fun SpannableStringBuilder.appendWithTypeface(
+    string: String,
+    typeface: Int = android.graphics.Typeface.BOLD
+) {
     val start = length
-    append(boldString)
-    setSpan(
-        StyleSpan(android.graphics.Typeface.BOLD),
-        start,
-        length,
-        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-    )
+    append(string)
+    setSpan(StyleSpan(typeface), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 }
 
 fun sendTextMessage(destinationAddress: String, message: String) {
@@ -245,7 +248,6 @@ fun String.emptyOrZeroToNull(): String? {
 }
 
 
-
 fun String.numP2E(reverse: Boolean = false): String {
     var str = this
     val chars = arrayOf(
@@ -271,6 +273,7 @@ fun String.numP2E(reverse: Boolean = false): String {
     //    Log.v("numE2P", str);
     return str
 }
+
 fun ObservableBoolean.start() {
     set(true)
 }
@@ -280,7 +283,11 @@ fun ObservableBoolean.stop() {
 }
 
 
-suspend fun <T : Any> Result<T>.parseOnMain(loading:ObservableBoolean,success: (data: T) -> Unit,error: (message: String, errorCode: ErrorCode) -> Unit) {
+suspend fun <T : Any> Result<T>.parseOnMain(
+    loading: ObservableBoolean,
+    success: (data: T) -> Unit,
+    error: (message: String, errorCode: ErrorCode) -> Unit
+) {
     val result = this
     when (result) {
         is Result.Success -> {
