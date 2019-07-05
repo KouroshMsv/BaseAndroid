@@ -2,6 +2,7 @@ package dev.kourosh.baseapp.infrastructure.mvvm.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -28,7 +29,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel> : A
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+Log.e("tag","")
 
         bind()
         vm.hideKeyboard.observe(this, Observer {

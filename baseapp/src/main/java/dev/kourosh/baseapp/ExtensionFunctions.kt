@@ -14,6 +14,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
@@ -106,10 +107,13 @@ fun TextView.moneyFormat() {
             s: CharSequence?, start: Int, before: Int, count: Int
         ) {
             removeTextChangedListener(this)
-            text = if (s.toString().isNullOrBlank()) {
+            text = if (s?.toString().isNullOrBlank()) {
                 ""
             } else {
                 s.toString().moneyFormat()
+            }
+            if(this@moneyFormat is EditText){
+                setSelection(text.toString().length)
             }
             addTextChangedListener(this)
         }
