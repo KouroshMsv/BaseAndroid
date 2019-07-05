@@ -14,7 +14,6 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
@@ -94,31 +93,31 @@ fun View.disable() {
 }*/
 
 fun TextView.moneyFormat() {
-    if (this is EditText) {
-        this.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-            }
+    addTextChangedListener(object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+        }
 
-            override fun beforeTextChanged(
-                s: CharSequence?, start: Int, count: Int, after: Int
-            ) {
-            }
+        override fun beforeTextChanged(
+            s: CharSequence?, start: Int, count: Int, after: Int
+        ) {
+        }
 
-            override fun onTextChanged(
-                s: CharSequence?, start: Int, before: Int, count: Int
-            ) {
-                removeTextChangedListener(this)
-                setText(s.toString().moneyFormat())
-                addTextChangedListener(this)
+        override fun onTextChanged(
+            s: CharSequence?, start: Int, before: Int, count: Int
+        ) {
+            removeTextChangedListener(this)
+            text = if (s.toString().isNullOrBlank()) {
+                ""
+            } else {
+                s.toString().moneyFormat()
             }
-        })
-    } else {
-        text = this.text.toString()
-            .moneyFormat()
-    }
+            addTextChangedListener(this)
+        }
+    })
 }
 
-val TextView.textString get() = this.text.toString()
+fun String.clearMoneyFormat() = replace(",", "")
+
 
 fun String.moneyFormat(): String {
     var currentString = this
