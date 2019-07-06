@@ -93,7 +93,7 @@ fun View.disable() {
             .into(this)
 }*/
 
-fun TextView.moneyFormat() {
+fun TextView.currencyFormat() {
     addTextChangedListener(object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
         }
@@ -110,9 +110,9 @@ fun TextView.moneyFormat() {
             text = if (s?.toString().isNullOrBlank()) {
                 ""
             } else {
-                s.toString().moneyFormat()
+                s.toString().currencyFormat()
             }
-            if(this@moneyFormat is EditText){
+            if(this@currencyFormat is EditText){
                 setSelection(text.toString().length)
             }
             addTextChangedListener(this)
@@ -120,10 +120,10 @@ fun TextView.moneyFormat() {
     })
 }
 
-fun String.clearMoneyFormat() = replace(",", "")
+fun String.clearCurrencyFormat() = replace(",", "")
 
 
-fun String.moneyFormat(): String {
+fun String.currencyFormat(): String {
     var currentString = this
     if (currentString.isEmpty()) currentString = "0"
     return try {
@@ -139,14 +139,14 @@ fun String.moneyFormat(): String {
     }
 }
 
-fun String.isPhoneNumber(): Boolean {
+fun String.isMobileNumber(): Boolean {
     val pattern = "(09)\\d\\d\\d\\d\\d\\d\\d\\d\\d"
     return Pattern.matches(pattern, this)
 }
 
-val Long.moneyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
+val Long.currencyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
 
-val Double.moneyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
+val Double.currencyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
 
 val Int.dp get():Int = this * (Resources.getSystem().displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
 
