@@ -57,15 +57,7 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel> : Dialo
     }
 
     fun showSnackBar(message: String, messageType: MessageType) {
-        val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
-        val view = toast.view
-        view.setBackgroundColor(ContextCompat.getColor(context!!, messageType.backgroundColor))
-        ViewCompat.setLayoutDirection(toast.view, ViewCompat.LAYOUT_DIRECTION_RTL)
-        val text = view.findViewById<TextView>(android.R.id.message)
-        CalligraphyUtils.applyFontToTextView(context, text, "fonts/isM.ttf")
-        text.setTextColor(ContextCompat.getColor(context!!, messageType.textColor))
-        toast.show()
-
+        dev.kourosh.baseapp.showSnackBar(activity!!.currentFocus!!,context!!, message,messageType)
     }
 
     open fun show(manager: FragmentManager) = super.show(manager, this.javaClass.simpleName)
