@@ -24,7 +24,9 @@ import dev.kourosh.baseapp.infrastructure.mvvm.dialog.BaseDialogViewModel
 import io.github.inflationx.calligraphy3.CalligraphyUtils
 
 
-abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel> : DialogFragment() {
+abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@LayoutRes private val layoutId: Int,
+                                                                         @IdRes private val variable: Int,
+                                                                         val viewModelInstance: VM) : DialogFragment() {
     lateinit var vm: VM
     lateinit var binding: B
         private set
@@ -35,10 +37,10 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel> : Dialo
         savedInstanceState: Bundle?
     ): View? {
         vm = ViewModelProviders.of(this)
-            .get(viewModelInstance()::class.java)
-        binding = DataBindingUtil.inflate(inflater, getLayoutID(), container, false)
+            .get(viewModelInstance::class.java)
+        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
-        binding.setVariable(getVariable(), vm)
+        binding.setVariable(variable, vm)
         binding.executePendingBindings()
         return binding.root
     }
@@ -47,7 +49,6 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel> : Dialo
         super.onViewCreated(view, savedInstanceState)
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        observeVMVariable()
         vm.errorMessage.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 showSnackBar(it, MessageType.ERROR)
@@ -69,16 +70,6 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel> : Dialo
     }
 
     open fun show(manager: FragmentManager) = super.show(manager, this.javaClass.simpleName)
-
-    @LayoutRes
-    abstract fun getLayoutID(): Int
-
-    @IdRes
-    abstract fun getVariable(): Int
-
-    abstract fun viewModelInstance(): VM
-
-    abstract fun observeVMVariable()
 
     protected abstract fun initialize()
 }

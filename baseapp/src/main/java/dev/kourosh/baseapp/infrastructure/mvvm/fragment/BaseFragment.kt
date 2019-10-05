@@ -15,7 +15,11 @@ import dev.kourosh.baseapp.dialogs.NetworkErrorDialog
 import dev.kourosh.baseapp.enums.MessageType
 import dev.kourosh.baseapp.hideKeyboard
 
-abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel> : Fragment() {
+abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(
+    @LayoutRes private val layoutId: Int,
+    @IdRes private val variable: Int,
+    val viewModelInstance: VM
+) : Fragment() {
     lateinit var vm: VM
     lateinit var binding: B
 
@@ -25,11 +29,11 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel> : F
         savedInstanceState: Bundle?
     ): View? {
         vm = ViewModelProviders.of(this)
-            .get(viewModelInstance()::class.java)
+            .get(viewModelInstance::class.java)
         lifecycle.addObserver(vm)
-        binding = DataBindingUtil.inflate(inflater, getLayoutID(), container, false)
+        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
-        binding.setVariable(getVariable(), vm)
+        binding.setVariable(variable, vm)
         binding.executePendingBindings()
         return binding.root
     }
@@ -48,7 +52,9 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel> : F
         vm.warningMessage.observe(viewLifecycleOwner, Observer {
             showSnackBar(it!!, MessageType.WARNING)
         })
-        vm.hideKeyboard.observe(viewLifecycleOwner, Observer { if (it) hideKeyboard(requireActivity()) })
+        vm.hideKeyboard.observe(
+            viewLifecycleOwner,
+            Observer { if (it) hideKeyboard(requireActivity()) })
         binding.root.setOnClickListener {
             hideKeyboard(requireActivity())
         }
@@ -58,14 +64,15 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel> : F
         vm.networkError.observe(this, Observer {
             if (it != null && !showingDialog) {
                 showingDialog = true
-                dialog.showCancel=it
+                dialog.showCancel = it
                 dialog.onRetryClickListener = View.OnClickListener {
-                    tryAgain()
+                    onNetworkErrorTryAgain()
                     vm.networkError.value = null
                     showingDialog = false
                     dialog.dismiss()
                 }
                 dialog.onCancelClickListener = View.OnClickListener {
+                    onNetworkErrorCancel()
                     vm.networkError.value = null
                     showingDialog = false
                     dialog.dismiss()
@@ -82,20 +89,7 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel> : F
         )
     }
 
-    @LayoutRes
-    abstract fun getLayoutID(): Int
-
-    @IdRes
-    abstract fun getVariable(): Int
-
-    abstract fun viewModelInstance(): VM
-
-    /* fun addFragment(fragment: Fragment) {
-       EventBus.getDefault()
-           .post(FragmentEB(fragment))
-     }*/
-
     abstract fun observeVMVariable()
-    abstract fun tryAgain()
-
+    abstract fun onNetworkErrorTryAgain()
+    abstract fun onNetworkErrorCancel()
 }
