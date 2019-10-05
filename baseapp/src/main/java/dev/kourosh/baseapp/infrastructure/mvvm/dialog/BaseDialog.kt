@@ -19,6 +19,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import dev.kourosh.baseapp.R
+import dev.kourosh.baseapp.dp
 import dev.kourosh.baseapp.enums.MessageType
 import dev.kourosh.baseapp.infrastructure.mvvm.dialog.BaseDialogViewModel
 import io.github.inflationx.calligraphy3.CalligraphyUtils
@@ -60,13 +62,14 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
     fun showSnackBar(message: String, messageType: MessageType) {
         val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
         val view = toast.view
-        view.setBackgroundColor(ContextCompat.getColor(context!!, messageType.backgroundColor))
+        view.setPadding(16.dp,16.dp,16.dp,16.dp)
         ViewCompat.setLayoutDirection(toast.view, ViewCompat.LAYOUT_DIRECTION_RTL)
         val text = view.findViewById<TextView>(android.R.id.message)
         CalligraphyUtils.applyFontToTextView(context, text, "fonts/isM.ttf")
         text.setTextColor(ContextCompat.getColor(context!!, messageType.textColor))
+        view.background=ContextCompat.getDrawable(context!!, messageType.drawable)
+        toast.view=view
         toast.show()
-
     }
 
     open fun show(manager: FragmentManager) = super.show(manager, this.javaClass.simpleName)
