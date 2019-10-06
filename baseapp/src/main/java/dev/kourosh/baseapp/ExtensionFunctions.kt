@@ -291,8 +291,7 @@ suspend fun <T : Any> Result<T>.parseOnMain(
     success: (data: T) -> Unit,
     error: (message: String, errorCode: ErrorCode) -> Unit
 ) {
-    val result = this
-    when (result) {
+    when (val result = this) {
         is Result.Success -> {
             loading.stop()
             withContext(Dispatchers.Main) {
