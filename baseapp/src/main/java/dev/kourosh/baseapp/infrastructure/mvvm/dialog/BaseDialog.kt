@@ -28,7 +28,7 @@ import io.github.inflationx.calligraphy3.CalligraphyUtils
 
 abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@LayoutRes private val layoutId: Int,
                                                                          @IdRes private val variable: Int,
-                                                                         val viewModelInstance: VM) : DialogFragment() {
+                                                                         private val viewModelInstance: VM) : DialogFragment() {
     lateinit var vm: VM
     lateinit var binding: B
         private set
