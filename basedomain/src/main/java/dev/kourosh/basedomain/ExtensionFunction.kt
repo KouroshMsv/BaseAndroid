@@ -17,7 +17,10 @@ fun launchIO(block: suspend CoroutineScope.() -> Unit) {
     }
 }
 
-suspend fun <T : Any> Result<T>.parseOnMain(success: (data: T) -> Unit,error: (message: String, errorCode: ErrorCode) -> Unit) {
+suspend fun <T : Any> Result<T>.parseOnMain(
+    success: (data: T) -> Unit,
+    error: (message: String, errorCode: ErrorCode) -> Unit
+) {
     val result = this
     when (result) {
         is Result.Success -> {
@@ -26,7 +29,8 @@ suspend fun <T : Any> Result<T>.parseOnMain(success: (data: T) -> Unit,error: (m
             }
         }
         is Result.Error -> {
-            logE("""message: [${result.message}]|statusCode: [${result.errorCode}""".trimMargin()
+            logE(
+                """message: [${result.message}]|statusCode: [${result.errorCode}""".trimMargin()
             )
             withContext(Dispatchers.Main) {
                 error(result.message, result.errorCode)
@@ -35,7 +39,10 @@ suspend fun <T : Any> Result<T>.parseOnMain(success: (data: T) -> Unit,error: (m
     }
 }
 
-inline fun <T : Any> Result<T>.parseResult(success: (data: T) -> Unit,error: (message: String, errorCode: ErrorCode) -> Unit) {
+inline fun <T : Any> Result<T>.parseResult(
+    success: (data: T) -> Unit,
+    error: (message: String, errorCode: ErrorCode) -> Unit
+) {
     when (val result = this) {
         is Result.Success -> {
             success(result.data)
@@ -51,7 +58,10 @@ inline fun <T : Any> Result<T>.parseResult(success: (data: T) -> Unit,error: (me
     }
 }
 
-inline fun <T : Any, R : Any> Result<T>.substitute(success: (data: T) -> Result<R>,error: (message: String,  errorCode: ErrorCode) -> Result<R>): Result<R> {
+inline fun <T : Any, R : Any> Result<T>.substitute(
+    success: (data: T) -> Result<R>,
+    error: (message: String, errorCode: ErrorCode) -> Result<R>
+): Result<R> {
     return when (val result = this) {
         is Result.Success -> {
             success(result.data)
@@ -107,11 +117,47 @@ inline fun <T : Any, R : Any> Result<T>.map(success: (data: T) -> R): Result<R> 
     }
 }
 
-fun currentIso8601() =
-    SimpleDateFormat(
-        "yyyy/MM/dd HH:mm",
-        Locale.getDefault()
-    ).format(Date(System.currentTimeMillis()))!!
+fun currentDateTimeIso8601(withSecond: Boolean = false, spacer: String = "T") = SimpleDateFormat(
+    if (withSecond)
+        "yyyy-MM-dd HH:mm:ss"
+    else
+        "yyyy-MM-dd HH:mm", Locale.ENGLISH
+).format(Date(System.currentTimeMillis()))!!.replace(" ", spacer)
+
+fun String?.emptyToNull(): String? {
+    return if (isNullOrBlank() || isNullOrEmpty())
+        null
+    else {
+        this
+    }
+}
+
+inline fun <reified T> classOf() = T::class.java
+
+suspend fun <T : Any> Result<T>.whenUnAuthorized(unAuthorized: suspend (Result.Error) -> Result<T>): Result<T> {
+    val result = this
+    return when (result) {
+        is Result.Success -> {
+            this
+        }
+        is Result.Error -> {
+            logE(
+                """message: [${result.message}]
+                |statusCode: [${result.errorCode}
+            """.trimMargin()
+            )
+            when (result.errorCode) {
+                ErrorCode.REFRESH_TOKEN_ERROR, ErrorCode.UNAUTHORIZED, ErrorCode.TOKEN_EXPIRED, ErrorCode.UNAVAILABLE_ACCOUNT -> {
+                    unAuthorized(result)
+                }
+                else -> {
+                    result
+                }
+            }
+
+        }
+    }
+}
 
 fun generateUUID() = UUID.randomUUID()!!.toString()
 

@@ -128,10 +128,10 @@ fun String.currencyFormat(): String {
     if (currentString.isEmpty()) currentString = "0"
     return try {
         if (currentString.contains('.')) {
-            NumberFormat.getNumberInstance(Locale.getDefault())
+            NumberFormat.getNumberInstance(Locale.ENGLISH)
                 .format(currentString.replace(",", "").toDouble())
         } else {
-            NumberFormat.getNumberInstance(Locale.getDefault())
+            NumberFormat.getNumberInstance(Locale.ENGLISH)
                 .format(currentString.replace(",", "").toLong())
         }
     } catch (a: Exception) {
@@ -144,9 +144,9 @@ fun String.isMobileNumber(): Boolean {
     return Pattern.matches(pattern, this)
 }
 
-val Long.currencyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
+val Long.currencyFormat get() = NumberFormat.getNumberInstance(Locale.ENGLISH).format(this)
 
-val Double.currencyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
+val Double.currencyFormat get() = NumberFormat.getNumberInstance(Locale.ENGLISH).format(this)
 
 val Int.dp get():Int = this * (Resources.getSystem().displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
 
