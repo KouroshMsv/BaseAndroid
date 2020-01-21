@@ -91,7 +91,7 @@ class AuthenticationCRUD(private val context: Context,private val accountType: S
 
     fun getUserData(userName: String, key: UserDataKeys) = getUserData(getAccount(userName)!!, key)
 
-    suspend fun getToken(username: String): Result<String> {
+    suspend fun getTokenOld(username: String): Result<String> {
         val account = getAccount(username)
 
         if (account == null) {
@@ -137,6 +137,18 @@ class AuthenticationCRUD(private val context: Context,private val accountType: S
                     null
                 )
                 return response.await()
+            }
+        }
+    }
+    fun getToken(username: String): Result<String> {
+        val account = getAccount(username)
+        return if (account == null) {
+             Result.Error("اکانت موجود نیست", ErrorCode.UNAVAILABLE_ACCOUNT)
+        } else {
+            if (isTimeOut(getUserData(username, UserDataKeys.EXPIRE_IN))) {
+                 Result.Error("توکن منقضی شده", ErrorCode.TOKEN_EXPIRED)
+            } else {
+                Result.Success(getUserData(account, UserDataKeys.ACCESS_TOKEN)!!)
             }
         }
     }
