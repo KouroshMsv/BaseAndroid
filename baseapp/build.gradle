@@ -32,24 +32,23 @@ android {
     }
 }
 ext {
-    liveData = '2.0.0'
-    appcompat = '1.0.2'
+    liveData = '2.2.0'
+    appcompat = '1.1.0'
     coroutines = '1.2.1'
 
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"
-    implementation "androidx.core:core-ktx:${appcompat}"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation "androidx.core:core-ktx:1.2.0"
+    implementation "androidx.appcompat:appcompat:${appcompat}"
+    implementation 'androidx.paging:paging-runtime:2.1.1'
     implementation "androidx.lifecycle:lifecycle-extensions:${liveData}"
     implementation "androidx.lifecycle:lifecycle-livedata-core:${liveData}"
     implementation "androidx.lifecycle:lifecycle-common-java8:${liveData}"
     kapt "androidx.lifecycle:lifecycle-compiler:${liveData}"
-    implementation 'androidx.paging:paging-runtime:2.1.0'
     kapt 'com.android.databinding:compiler:3.1.4'
     implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines}"
     implementation "io.github.inflationx:calligraphy3:3.1.0"

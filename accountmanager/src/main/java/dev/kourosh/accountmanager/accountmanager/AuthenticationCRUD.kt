@@ -10,9 +10,12 @@ import dev.kourosh.accountmanager.UserDataKeys
 import dev.kourosh.basedomain.ErrorCode
 import dev.kourosh.basedomain.Result
 import dev.kourosh.basedomain.logE
-import kotlinx.coroutines.CompletableDeferred
 
-class AuthenticationCRUD(private val context: Context,private val accountType: String,private val authTokenType: String = "FullAccess") {
+class AuthenticationCRUD(
+    private val context: Context,
+    private val accountType: String,
+    private val authTokenType: String = "FullAccess"
+) {
     private val accountManager = AccountManager.get(context)!!
 
     fun createOrUpdateAccount(
@@ -55,7 +58,7 @@ class AuthenticationCRUD(private val context: Context,private val accountType: S
     }
 
     fun isAccountValid(username: String, password: String) =
-        getAccount(username) != null && accountManager.getPassword(getAccount(username)!!) == password
+        getAccount(username) != null && accountManager.getPassword(getAccount(username)) == password
 
     private fun HashMap<UserDataKeys, String>.toBundle(): Bundle {
         val bundle = Bundle()
@@ -83,112 +86,51 @@ class AuthenticationCRUD(private val context: Context,private val accountType: S
     }
 
     fun updateUserData(userName: String, userData: Map<UserDataKeys, String>) {
-        updateUserData(getAccount(userName)!!, userData)
+        getAccount(userName)?.run {
+            updateUserData(this, userData)
+        }
+
     }
 
     fun getUserData(account: Account, key: UserDataKeys) =
         accountManager.getUserData(account, key.name)
 
-    fun getUserData(userName: String, key: UserDataKeys) = getUserData(getAccount(userName)!!, key)
+    fun getUserData(userName: String, key: UserDataKeys) =
+        getAccount(userName)?.run { getUserData(this, key) }
 
-    suspend fun getTokenOld(username: String): Result<String> {
-        val account = getAccount(username)
-
-        if (account == null) {
-            return Result.Error("اکانت موجود نیست", ErrorCode.UNAVAILABLE_ACCOUNT)
-        } else {
-
-            if (isTimeOut(getUserData(username, UserDataKeys.EXPIRE_IN))) {
-                return Result.Error("توکن منقضی شده", ErrorCode.TOKEN_EXPIRED)
-            } else {
-                val response = CompletableDeferred<Result<String>>()
-                accountManager.getAuthToken(getAccount(username)!!,authTokenType,null,null,{ future ->if (future.isDone && !future.isCancelled) {
-                            try {
-                                val bundle = future.result
-                                val authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN, null)
-                                if (!authToken.isNullOrEmpty()) {
-                                    response.complete(Result.Success(authToken))
-                                } else {
-                                    response.complete(
-                                        Result.Error(
-                                            "خطا در دریافت توکن",
-                                            ErrorCode.UNAUTHORIZED
-                                        )
-                                    )
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                response.complete(
-                                    Result.Error(
-                                        "خطا در دریافت توکن",
-                                        ErrorCode.UNAUTHORIZED
-                                    )
-                                )
-                            }
-                        } else {
-                            response.complete(
-                                Result.Error(
-                                    "خطا در دریافت توکن",
-                                    ErrorCode.UNAUTHORIZED
-                                )
-                            )
-                        }
-                    },
-                    null
-                )
-                return response.await()
-            }
-        }
-    }
     fun getToken(username: String): Result<String> {
         val account = getAccount(username)
         return if (account == null) {
-             Result.Error("اکانت موجود نیست", ErrorCode.UNAVAILABLE_ACCOUNT)
+            Result.Error("اکانت موجود نیست", ErrorCode.UNAVAILABLE_ACCOUNT)
         } else {
             if (isTimeOut(getUserData(username, UserDataKeys.EXPIRE_IN))) {
-                 Result.Error("توکن منقضی شده", ErrorCode.TOKEN_EXPIRED)
+                Result.Error("توکن منقضی شده", ErrorCode.TOKEN_EXPIRED)
             } else {
-                Result.Success(getUserData(account, UserDataKeys.ACCESS_TOKEN)!!)
+                val token = getUserData(account, UserDataKeys.ACCESS_TOKEN)
+                if (token != null)
+                    Result.Success(token)
+                else
+                    Result.Error("توکن منقضی شده", ErrorCode.TOKEN_EXPIRED)
             }
         }
     }
+
     fun deleteAccount(mobile: String) {
-        val account=getAccount(mobile)
+        val account = getAccount(mobile)
         try {
-            if ( account != null) {
+            if (account != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    accountManager.removeAccount(account,context as Activity,null,null )
-                }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                    accountManager.removeAccount(account,null,null )
+                    accountManager.removeAccount(account, context as Activity, null, null)
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    accountManager.removeAccount(account, null, null)
                 }
             }
         } catch (e: Exception) {
             logE(e.message.toString())
         }
     }
-    /*fun getToken(userName: String) = Single.create(SingleOnSubscribe<String> {
-        val account = getAccount(userName)
 
-        val callback = AccountManagerCallback<Bundle?> { future ->
-            try {
-                val bundle = future.result
-                val authToken = bundle!!.getString(AccountManager.KEY_AUTHTOKEN, null)
-                if (account == null || account.isUnavailable())
-                    it.onError(NullPointerException("null account"))
-                else if (isTimeOut(getUserData(account, UserDataKeys.EXPIRE_IN)))
-                    it.onError(TokenExpireException(getUserData(userName, UserDataKeys.REFRESH_TOKEN)))
-                else
-                    it.onSuccess(authToken)
-            } catch (e: Exception) {
-                it.onError(e)
-            }
-        }
-        accountManager.getAuthToken(account, authTokenType, null, null, callback, null)
-    })
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())!!*/
-
-    private fun isTimeOut(timeOut: String) = timeOut.toLong() <= (System.currentTimeMillis())
+    private fun isTimeOut(timeOut: String?) = timeOut?.toLong()?:0 <= (System.currentTimeMillis())
 
     private fun Account.isUnavailable(): Boolean {
         for (account in accountManager.accounts) {

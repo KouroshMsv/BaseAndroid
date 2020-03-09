@@ -198,15 +198,6 @@ fun ByteArray.decodeBase64() = android.util.Base64.decode(this, android.util.Bas
 fun String.encodeBase64() = this.toByteArray().encodeBase64()
 fun String.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 
-fun SpannableStringBuilder.appendWithColor(
-    string: String,
-    context: Context, @ColorRes colorId: Int = R.color.warm_grey
-) {
-    val color = ContextCompat.getColor(context, colorId)
-    val start = length
-    append(string)
-    setSpan(ForegroundColorSpan(color), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-}
 
 fun SpannableStringBuilder.appendWithTypeface(
     string: String,
