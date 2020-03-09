@@ -23,16 +23,14 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.calligraphy3.CalligraphyUtils
 import io.github.inflationx.viewpump.ViewPump
 
-fun succeededTone() {
-    ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100).startTone(ToneGenerator.TONE_PROP_ACK, 200)
+fun generateTone(
+    toneType: Int = ToneGenerator.TONE_PROP_ACK,
+    duration: Int = 200,
+    volume: Int = 100
+) {
+    ToneGenerator(AudioManager.STREAM_NOTIFICATION, volume).startTone(toneType, duration)
 }
 
-fun failedTone() {
-    ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100).startTone(
-        ToneGenerator.TONE_PROP_NACK,
-        200
-    )
-}
 
 fun Context.vibrate(millisecond: Long = 200) {
     val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
@@ -67,13 +65,14 @@ fun showSnackBar(
     snackBar.view.setBackgroundColor(ContextCompat.getColor(context, type.backgroundColor))
     val tv = snackBar.view.findViewById(R.id.snackbar_text) as TextView
     tv.setTextColor(ContextCompat.getColor(context, type.textColor))
-    CalligraphyUtils.applyFontToTextView(context, tv, "fonts/isM.ttf")
+    CalligraphyUtils.applyFontToTextView(context, tv, defaultFontPath)
     ViewCompat.setLayoutDirection(snackBar.view, ViewCompat.LAYOUT_DIRECTION_RTL)
     snackBar.show()
 }
-
+private lateinit var defaultFontPath:String
 
 fun Application.initApp(defaultFontPath: String) {
+    dev.kourosh.baseapp.defaultFontPath =defaultFontPath
     ViewPump.init(
         ViewPump.builder().addInterceptor(
             CalligraphyInterceptor(
