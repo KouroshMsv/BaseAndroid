@@ -10,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import dev.kourosh.baseapp.dialogs.NetworkErrorDialog
 import dev.kourosh.baseapp.enums.MessageType
 import dev.kourosh.baseapp.hideKeyboard
@@ -28,7 +28,7 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        vm = ViewModelProviders.of(this)
+        vm = ViewModelProvider(this)
             .get(viewModelInstance::class.java)
         lifecycle.addObserver(vm)
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)

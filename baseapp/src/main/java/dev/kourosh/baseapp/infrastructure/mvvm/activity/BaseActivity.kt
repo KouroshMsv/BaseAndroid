@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import dev.kourosh.baseapp.dialogs.NetworkErrorDialog
 import dev.kourosh.baseapp.enums.MessageType
 import dev.kourosh.baseapp.hideKeyboard
@@ -24,7 +24,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(
 ) : AppCompatActivity() {
 
     protected val vm: VM by lazy {
-        ViewModelProviders.of(this)
+        ViewModelProvider(this)
             .get(viewModelInstance::class.java)
     }
 
