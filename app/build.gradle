@@ -35,5 +35,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${appcompat}"
     implementation "androidx.core:core-ktx:1.2.0"
     implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    implementation project(path: ':basedomain')
+    implementation project(path: ':baseapp')
+    implementation project(path: ':accountmanager')
 
 }

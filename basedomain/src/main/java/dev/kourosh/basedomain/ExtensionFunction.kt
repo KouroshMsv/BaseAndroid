@@ -1,6 +1,9 @@
 package dev.kourosh.basedomain
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,4 +34,5 @@ fun String?.emptyToNull(): String? {
     }
 }
 
-fun generateUUID() = UUID.randomUUID()!!.toString()
+val uuid: String
+    get() = UUID.randomUUID()!!.toString()
