@@ -8,7 +8,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 
 abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(
     @LayoutRes private val layoutId: Int,
@@ -22,7 +22,7 @@ abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel
         savedInstanceState: Bundle?
     ): View? {
         vm = activity?.run {
-            ViewModelProviders.of(this).get(viewModelInstance::class.java)
+            ViewModelProvider(this).get(viewModelInstance::class.java)
         } ?: throw Exception("Invalid Activity")
         lifecycle.addObserver(vm)
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)

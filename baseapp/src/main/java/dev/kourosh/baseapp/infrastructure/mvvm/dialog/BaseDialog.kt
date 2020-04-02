@@ -18,7 +18,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import dev.kourosh.baseapp.R
 import dev.kourosh.baseapp.dp
 import dev.kourosh.baseapp.enums.MessageType
@@ -38,7 +38,7 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        vm = ViewModelProviders.of(this)
+        vm = ViewModelProvider(this)
             .get(viewModelInstance::class.java)
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this

@@ -32,13 +32,14 @@ fun generateTone(
 }
 
 
-fun Context.vibrate(millisecond: Long = 200) {
+fun Context.vibrate(millisecond: Long = 200, repeat: Int = 1) {
     val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
         vibrator.vibrate(
-            VibrationEffect.createOneShot(
-                millisecond,
-                VibrationEffect.DEFAULT_AMPLITUDE
+            VibrationEffect.createWaveform(
+                (0..repeat).map { millisecond }.toLongArray(),
+                (0..repeat).map { VibrationEffect.DEFAULT_AMPLITUDE }.toIntArray(),
+                repeat
             )
         )
     } else {
@@ -69,14 +70,16 @@ fun showSnackBar(
     ViewCompat.setLayoutDirection(snackBar.view, ViewCompat.LAYOUT_DIRECTION_RTL)
     snackBar.show()
 }
-private lateinit var defaultFontPath:String
+
+private lateinit var defaultFontPath: String
 
 fun Application.initApp(defaultFontPath: String) {
-    dev.kourosh.baseapp.defaultFontPath =defaultFontPath
+    dev.kourosh.baseapp.defaultFontPath = defaultFontPath
     ViewPump.init(
         ViewPump.builder().addInterceptor(
             CalligraphyInterceptor(
-                CalligraphyConfig.Builder().setDefaultFontPath(defaultFontPath).setFontAttrId(R.attr.fontPath).build()
+                CalligraphyConfig.Builder().setDefaultFontPath(defaultFontPath)
+                    .setFontAttrId(R.attr.fontPath).build()
             )
         ).build()
     )
