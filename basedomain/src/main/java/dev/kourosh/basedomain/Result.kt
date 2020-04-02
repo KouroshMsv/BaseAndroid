@@ -41,7 +41,7 @@ sealed class Result<out T : Any> {
         }
     }
 
-    fun parse(
+    inline fun parse(
         success: (data: T) -> Unit,
         error: (message: String, errorCode: ErrorCode) -> Unit
     ) {
@@ -56,7 +56,7 @@ sealed class Result<out T : Any> {
         }
     }
 
-    fun parseWithoutError(success: (data: T) -> Unit) {
+    inline fun parseWithoutError(success: (data: T) -> Unit) {
         when (this) {
             is Success -> {
                 success(data)
@@ -67,7 +67,7 @@ sealed class Result<out T : Any> {
         }
     }
 
-    fun <R : Any> substitute(
+    inline fun <R : Any> substitute(
         success: (data: T) -> Result<R>,
         error: (message: String, errorCode: ErrorCode) -> Result<R>
     ): Result<R> {
@@ -83,12 +83,12 @@ sealed class Result<out T : Any> {
     }
 
 
-    fun <B : Any> map(mapping: (T) -> B): Result<B> = when (this) {
+    inline fun <B : Any> map(mapping: (T) -> B): Result<B> = when (this) {
         is Success -> Success(mapping(data))
         is Error -> this
     }
 
-    fun <B : Any> bind(mapping: (T) -> Result<B>): Result<B> =
+    inline fun <B : Any> bind(mapping: (T) -> Result<B>): Result<B> =
         when (this) {
             is Success -> mapping(data)
             is Error -> {
