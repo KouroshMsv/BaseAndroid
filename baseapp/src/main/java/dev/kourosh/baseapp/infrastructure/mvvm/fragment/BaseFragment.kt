@@ -18,7 +18,7 @@ import dev.kourosh.baseapp.hideKeyboard
 abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(
     @LayoutRes private val layoutId: Int,
     @IdRes private val variable: Int,
-    val viewModelInstance: VM
+    private val viewModelInstance: VM
 ) : Fragment() {
     lateinit var vm: VM
     lateinit var binding: B

@@ -1,11 +1,5 @@
 <resources>
     <string name="app_name">baseApp</string>
-
-    <string name="isBold">fonts/isB.ttf</string>
-    <string name="isLight">fonts/isL.ttf</string>
-    <string name="isMedium">fonts/isM.ttf</string>
-    <string name="isRegular">fonts/isR.ttf</string>
-    <string name="isUltraLight">fonts/isUL.ttf</string>
     <string name="unableToConnectToTheInternet">ارتباط با اینترنت قطع است</string>
     <string name="tryAgain">تلاش مجدد</string>
     <string name="cancel">لغو</string>

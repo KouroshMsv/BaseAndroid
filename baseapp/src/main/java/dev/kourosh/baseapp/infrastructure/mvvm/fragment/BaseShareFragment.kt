@@ -4,20 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProviders
 
-abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel> : BaseFragment<B,VM>() {
+abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(
+    @LayoutRes private val layoutId: Int,
+    @IdRes private val variable: Int,
+    private val viewModelInstance: VM
+) : BaseFragment<B, VM>(layoutId, variable, viewModelInstance) {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         vm = activity?.run {
-            ViewModelProviders.of(this).get(viewModelInstance()::class.java)
+            ViewModelProviders.of(this).get(viewModelInstance::class.java)
         } ?: throw Exception("Invalid Activity")
         lifecycle.addObserver(vm)
-        binding = DataBindingUtil.inflate(inflater, getLayoutID(), container, false)
+        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
-        binding.setVariable(getVariable(), vm)
+        binding.setVariable(variable, vm)
         binding.executePendingBindings()
         return binding.root
     }

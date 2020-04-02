@@ -133,10 +133,10 @@ fun String.currencyFormat(): String {
     if (currentString.isEmpty()) currentString = "0"
     return try {
         if (currentString.contains('.')) {
-            NumberFormat.getNumberInstance(Locale.getDefault())
+            NumberFormat.getNumberInstance(Locale.ENGLISH)
                 .format(currentString.replace(",", "").toDouble())
         } else {
-            NumberFormat.getNumberInstance(Locale.getDefault())
+            NumberFormat.getNumberInstance(Locale.ENGLISH)
                 .format(currentString.replace(",", "").toLong())
         }
     } catch (a: Exception) {
@@ -149,9 +149,9 @@ fun String.isMobileNumber(): Boolean {
     return Pattern.matches(pattern, this)
 }
 
-val Long.currencyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
+val Long.currencyFormat get() = NumberFormat.getNumberInstance(Locale.ENGLISH).format(this)
 
-val Double.currencyFormat get() = NumberFormat.getNumberInstance(Locale.getDefault()).format(this)
+val Double.currencyFormat get() = NumberFormat.getNumberInstance(Locale.ENGLISH).format(this)
 
 val Int.dp get():Int = this * (Resources.getSystem().displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
 
@@ -203,15 +203,6 @@ fun ByteArray.decodeBase64() = android.util.Base64.decode(this, android.util.Bas
 fun String.encodeBase64() = this.toByteArray().encodeBase64()
 fun String.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 
-fun SpannableStringBuilder.appendWithColor(
-    string: String,
-    context: Context, @ColorRes colorId: Int = R.color.warm_grey
-) {
-    val color = ContextCompat.getColor(context, colorId)
-    val start = length
-    append(string)
-    setSpan(ForegroundColorSpan(color), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-}
 
 fun SpannableStringBuilder.appendWithTypeface(
     string: String,
