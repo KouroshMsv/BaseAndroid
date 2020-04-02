@@ -112,6 +112,9 @@ sealed class Result<out T : Any> {
         )
     }
 
+
+
+
 }
 
 enum class ErrorCode {
@@ -133,3 +136,22 @@ fun <T : Any> Result<T>.bindFailure(mapping: (message: String, errorCode: ErrorC
         is Result.Success -> this
         is Result.Error -> mapping(message, errorCode)
     }
+suspend fun <T : Any> Result<T>.whenUnAuthorized(unAuthorized: suspend (Result.Error) -> Result<T>): Result<T> {
+    return when (val result = this) {
+        is Result.Success -> {
+            this
+        }
+        is Result.Error -> {
+            result.log()
+            when (result.errorCode) {
+                ErrorCode.REFRESH_TOKEN_ERROR, ErrorCode.UNAUTHORIZED, ErrorCode.TOKEN_EXPIRED, ErrorCode.UNAVAILABLE_ACCOUNT -> {
+                    unAuthorized(result)
+                }
+                else -> {
+                    result
+                }
+            }
+
+        }
+    }
+}
