@@ -1,8 +1,10 @@
 package dev.kourosh.baseapp
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Typeface
 import android.telephony.SmsManager
 import android.text.Editable
 import android.text.Spannable
@@ -18,8 +20,11 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.basedomain.ErrorCode
 import dev.kourosh.basedomain.Result
 import dev.kourosh.basedomain.logE
@@ -112,7 +117,7 @@ fun TextView.currencyFormat() {
             } else {
                 s.toString().currencyFormat()
             }
-            if(this@currencyFormat is EditText){
+            if (this@currencyFormat is EditText) {
                 setSelection(text.toString().length)
             }
             addTextChangedListener(this)
@@ -307,3 +312,55 @@ suspend fun <T : Any> Result<T>.parseOnMain(
         }
     }
 }
+
+suspend fun <T : Any> Result<T>.parseWithoutErrorOnMain(
+    loading: ObservableBoolean,
+    success: (data: T) -> Unit
+) {
+    when (val result = this) {
+        is Result.Success -> {
+            loading.stop()
+            withContext(Dispatchers.Main) {
+                success(result.data)
+            }
+        }
+        is Result.Error -> {
+            loading.stop()
+            result.log()
+        }
+    }
+}
+
+fun <T> RecyclerView.Adapter<*>.autoNotify(
+    oldList: List<T>,
+    newList: List<T>,
+    compare: (T, T) -> Boolean
+) {
+    val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return compare(oldList[oldItemPosition], newList[newItemPosition])
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
+
+        override fun getOldListSize() = oldList.size
+
+        override fun getNewListSize() = newList.size
+    })
+
+    diff.dispatchUpdatesTo(this)
+}
+
+
+@SuppressLint("ResourceAsColor")
+inline fun SpannableStringBuilder.hint(
+    text: () -> String
+) = inSpans(ForegroundColorSpan(R.color.hintColor), builderAction = { append(text()) })
+
+inline fun SpannableStringBuilder.bold(
+    text: () -> String
+) = inSpans(StyleSpan(Typeface.BOLD), builderAction = { append(text()) })
+
