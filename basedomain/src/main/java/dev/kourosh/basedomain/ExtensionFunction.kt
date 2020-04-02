@@ -4,7 +4,6 @@ import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 fun logV(any: Any) = L.v(any.toString())
 fun logD(any: Any) = L.d(any.toString())
 fun logI(any: Any) = L.i(any.toString())
@@ -17,11 +16,19 @@ fun launchIO(block: suspend CoroutineScope.() -> Unit) {
     }
 }
 
-fun currentIso8601() =
-    SimpleDateFormat(
-        "yyyy/MM/dd HH:mm",
-        Locale.getDefault()
-    ).format(Date(System.currentTimeMillis()))!!
+fun currentDateTimeIso8601(withSecond: Boolean = false, spacer: String = "T") = SimpleDateFormat(
+    if (withSecond)
+        "yyyy-MM-dd HH:mm:ss"
+    else
+        "yyyy-MM-dd HH:mm", Locale.ENGLISH
+).format(Date(System.currentTimeMillis()))!!.replace(" ", spacer)
+
+fun String?.emptyToNull(): String? {
+    return if (isNullOrBlank() || isNullOrEmpty())
+        null
+    else {
+        this
+    }
+}
 
 fun generateUUID() = UUID.randomUUID()!!.toString()
-
