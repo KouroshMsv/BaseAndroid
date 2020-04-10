@@ -9,13 +9,11 @@ import androidx.databinding.ViewDataBinding
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
 abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
     diffUtil: DiffUtil.ItemCallback<T>
 ) : PagedListAdapter<T, BasePagingAdapter.ViewHolder<VB>>(diffUtil) {
-    protected var onItemClickListener: OnItemClickListener<T>? = null
     protected lateinit var context: Context
         private set
     protected var layoutInflater: LayoutInflater? = null
@@ -32,14 +30,6 @@ abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(
                 false
             ) as VB
         )
-    }
-
-    fun setOnItemClickListener(onClicked: (T) -> (Unit)) {
-        onItemClickListener = object : OnItemClickListener<T> {
-            override fun onItemClicked(item: T) {
-                onClicked(item)
-            }
-        }
     }
 
     class ViewHolder<VB : ViewDataBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)

@@ -14,14 +14,15 @@ import kotlin.properties.Delegates
 abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int) :
     RecyclerView.Adapter<BaseRecyclerAdapterWithDiffUtil.ViewHolder<VB>>() {
     protected var onItemClickListener: OnItemClickListener<T>? = null
-    protected abstract val areItemsTheSameCompare: (T, T) -> Boolean
-    protected open val areContentsTheSameCompare: (T, T) -> Boolean = { t1, t2 -> t1 == t2 }
+    abstract val areItemsTheSameCompare: (T, T) -> Boolean
+    open val areContentsTheSameCompare: (T, T) -> Boolean = { t1, t2 -> t1 == t2 }
     protected var layoutInflater: LayoutInflater? = null
     protected lateinit var context: Context
     var items: List<T> by Delegates.observable(emptyList()) { prop, oldList, newList ->
         autoNotify(oldList, newList, areItemsTheSameCompare, areContentsTheSameCompare)
     }
 
+    var withAutoAssignClickListener: Boolean = true
     val isEmpty: Boolean
         get() = itemCount == 0
 
@@ -41,9 +42,9 @@ abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding>(@LayoutR
     }
 
     override fun onBindViewHolder(holder: ViewHolder<VB>, position: Int) {
-        if (onItemClickListener != null) {
+        if (onItemClickListener != null && withAutoAssignClickListener) {
             holder.itemView.setOnClickListener {
-                onItemClickListener!!.onItemClicked(items[position])
+                onItemClickListener!!.onItemClicked(items[holder.adapterPosition])
             }
         }
     }

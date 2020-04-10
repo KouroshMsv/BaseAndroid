@@ -22,6 +22,7 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
             notifyDataSetChanged()
         }
 
+    var withAutoAssignClickListener: Boolean = true
     val isEmpty: Boolean
         get() = itemCount == 0
 
@@ -41,9 +42,9 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
     }
 
     override fun onBindViewHolder(holder: ViewHolder<VB>, position: Int) {
-        if (onItemClickListener != null) {
+        if (onItemClickListener != null && withAutoAssignClickListener) {
             holder.itemView.setOnClickListener {
-                onItemClickListener!!.onItemClicked(items[position])
+                onItemClickListener!!.onItemClicked(items[holder.adapterPosition])
             }
         }
     }
