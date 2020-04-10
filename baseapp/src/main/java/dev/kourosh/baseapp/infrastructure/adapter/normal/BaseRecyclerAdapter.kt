@@ -7,21 +7,20 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import dev.kourosh.baseapp.infrastructure.adapter.BaseBindingViewHolder
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
 abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int) :
     RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
+    private var onItemClickListener: OnItemClickListener<T>? = null
+    protected  var layoutInflater: LayoutInflater? = null
+    protected  var context: Context? = null
+
     open var items: MutableList<T> = mutableListOf()
         set(value) {
             this.items.clear()
             this.items.addAll(value)
             notifyDataSetChanged()
         }
-
-    var layoutInflater: LayoutInflater? = null
-    var onItemClickListener: OnItemClickListener<T>? = null
-    var context: Context?=null
 
     val isEmpty: Boolean
         get() = itemCount == 0
@@ -49,11 +48,15 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
         }
     }
 
-
-    class ViewHolder<VB:ViewDataBinding>(binding: VB) : RecyclerView.ViewHolder(binding.root)
-
-
     override fun getItemCount() = items.size
+
+    fun setOnItemClickListener(onClicked: (T) -> (Unit)) {
+        onItemClickListener = object : OnItemClickListener<T> {
+            override fun onItemClicked(item: T) {
+                onClicked(item)
+            }
+        }
+    }
 
     open fun add(item: T) {
         items.add(item)
@@ -83,5 +86,7 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
             notifyItemRemoved(position)
         }
     }
+
+    class ViewHolder<VB:ViewDataBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)
 
 }

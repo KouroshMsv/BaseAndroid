@@ -2,7 +2,6 @@ package dev.kourosh.baseapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Typeface
 import android.telephony.SmsManager
@@ -18,8 +17,6 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.core.content.ContextCompat
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.fragment.app.FragmentManager
@@ -325,16 +322,17 @@ suspend fun <T : Any> Result<T>.parseWithoutErrorOnMain(
 fun <T> RecyclerView.Adapter<*>.autoNotify(
     oldList: List<T>,
     newList: List<T>,
-    compare: (T, T) -> Boolean
+    areItemsTheSameCompare: (T, T) -> Boolean,
+    areContentsTheSameCompare: (T, T) -> Boolean = { t1, t2 -> t1 == t2 }
 ) {
     val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return compare(oldList[oldItemPosition], newList[newItemPosition])
+            return areItemsTheSameCompare(oldList[oldItemPosition], newList[newItemPosition])
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
+            return areContentsTheSameCompare(oldList[oldItemPosition], newList[newItemPosition])
         }
 
         override fun getOldListSize() = oldList.size

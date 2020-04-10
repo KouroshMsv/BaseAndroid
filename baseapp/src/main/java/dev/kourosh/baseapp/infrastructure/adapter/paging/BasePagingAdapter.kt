@@ -8,22 +8,23 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import dev.kourosh.baseapp.infrastructure.adapter.BaseBindingViewHolder
+import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
-abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding, VH : BaseBindingViewHolder<VB>>(
+abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
     diffUtil: DiffUtil.ItemCallback<T>
-) :PagedListAdapter<T, VH>(diffUtil) {
-    lateinit var context:Context
-    var onItemClickListener: OnItemClickListener<T>? = null
-    var layoutInflater: LayoutInflater? = null
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        context=parent.context
+) : PagedListAdapter<T, BasePagingAdapter.ViewHolder<VB>>(diffUtil) {
+    private var onItemClickListener: OnItemClickListener<T>? = null
+    protected lateinit var context: Context
+        private set
+    protected var layoutInflater: LayoutInflater? = null
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<VB> {
+        context = parent.context
         if (layoutInflater == null) {
-            layoutInflater = LayoutInflater.from(parent.context)
+            layoutInflater = LayoutInflater.from(context)
         }
-        return getViewHolder(
+        return ViewHolder(
             DataBindingUtil.inflate(
                 layoutInflater!!,
                 layoutId,
@@ -33,7 +34,15 @@ abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding, VH : BaseBinding
         )
     }
 
-    abstract fun getViewHolder(vb: VB): VH
+    fun setOnItemClickListener(onClicked: (T) -> (Unit)) {
+        onItemClickListener = object : OnItemClickListener<T> {
+            override fun onItemClicked(item: T) {
+                onClicked(item)
+            }
+        }
+    }
+
+    class ViewHolder<VB : ViewDataBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)
 
 }
 

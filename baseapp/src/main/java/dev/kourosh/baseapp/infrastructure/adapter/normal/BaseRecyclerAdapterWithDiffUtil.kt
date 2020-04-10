@@ -8,40 +8,39 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.baseapp.autoNotify
-import dev.kourosh.baseapp.infrastructure.adapter.BaseBindingViewHolder
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 import kotlin.properties.Delegates
 
-abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding, VH : BaseBindingViewHolder<VB>> :
-    RecyclerView.Adapter<VH>() {
-    abstract val compare: (T, T) -> Boolean
+abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int) :
+    RecyclerView.Adapter<BaseRecyclerAdapterWithDiffUtil.ViewHolder<VB>>() {
+    private var onItemClickListener: OnItemClickListener<T>? = null
+    protected abstract val areItemsTheSameCompare: (T, T) -> Boolean
+    protected open val areContentsTheSameCompare: (T, T) -> Boolean = { t1, t2 -> t1 == t2 }
+    protected var layoutInflater: LayoutInflater? = null
+    protected lateinit var context: Context
     var items: List<T> by Delegates.observable(emptyList()) { prop, oldList, newList ->
-        autoNotify(oldList, newList, compare)
+        autoNotify(oldList, newList, areItemsTheSameCompare, areContentsTheSameCompare)
     }
-    var layoutInflater: LayoutInflater? = null
-
-    var onItemClickListener: OnItemClickListener<T>? = null
-    lateinit var context: Context
 
     val isEmpty: Boolean
         get() = itemCount == 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<VB> {
         context = parent.context!!
         if (layoutInflater == null) {
             layoutInflater = LayoutInflater.from(parent.context)
         }
-        return getViewHolder(
+        return ViewHolder(
             DataBindingUtil.inflate(
                 layoutInflater!!,
-                getRootLayout(),
+                layoutId,
                 parent,
                 false
             ) as VB
         )
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder<VB>, position: Int) {
         if (onItemClickListener != null) {
             holder.itemView.setOnClickListener {
                 onItemClickListener!!.onItemClicked(items[position])
@@ -49,11 +48,18 @@ abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding, VH : Bas
         }
     }
 
-    @LayoutRes
-    abstract fun getRootLayout(): Int
-
-    abstract fun getViewHolder(vb: VB): VH
 
     override fun getItemCount() = items.size
+
+    fun setOnItemClickListener(onClicked: (T) -> (Unit)) {
+        onItemClickListener = object : OnItemClickListener<T> {
+            override fun onItemClicked(item: T) {
+                onClicked(item)
+            }
+        }
+    }
+
+    class ViewHolder<VB : ViewDataBinding>(val binding: VB) :
+        RecyclerView.ViewHolder(binding.root)
 
 }
