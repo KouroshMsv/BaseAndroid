@@ -22,7 +22,7 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
             notifyDataSetChanged()
         }
 
-    var withAutoAssignClickListener: Boolean = true
+    open var withAutoAssignClickListener: Boolean = true
     val isEmpty: Boolean
         get() = itemCount == 0
 
