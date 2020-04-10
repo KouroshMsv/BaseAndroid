@@ -22,6 +22,7 @@ import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.calligraphy3.CalligraphyUtils
 import io.github.inflationx.viewpump.ViewPump
+import java.text.DecimalFormat
 
 fun generateTone(
     toneType: Int = ToneGenerator.TONE_PROP_ACK,
@@ -84,3 +85,6 @@ fun Application.initApp(defaultFontPath: String) {
         ).build()
     )
 }
+private val df = DecimalFormat("#.##")
+
+fun Double.decimalFormat() =df.format(this)

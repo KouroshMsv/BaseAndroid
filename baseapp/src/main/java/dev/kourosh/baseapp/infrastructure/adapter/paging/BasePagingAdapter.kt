@@ -12,6 +12,7 @@ import dev.kourosh.baseapp.infrastructure.adapter.BaseBindingViewHolder
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
 abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding, VH : BaseBindingViewHolder<VB>>(
+    @LayoutRes private val layoutId: Int,
     diffUtil: DiffUtil.ItemCallback<T>
 ) :PagedListAdapter<T, VH>(diffUtil) {
     lateinit var context:Context
@@ -25,7 +26,7 @@ abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding, VH : BaseBinding
         return getViewHolder(
             DataBindingUtil.inflate(
                 layoutInflater!!,
-                getRootLayout(),
+                layoutId,
                 parent,
                 false
             ) as VB
@@ -33,9 +34,6 @@ abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding, VH : BaseBinding
     }
 
     abstract fun getViewHolder(vb: VB): VH
-
-    @LayoutRes
-    abstract fun getRootLayout(): Int
 
 }
 

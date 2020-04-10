@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.baseapp.infrastructure.adapter.BaseBindingViewHolder
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
-abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding, VH : BaseBindingViewHolder<VB>> :RecyclerView.Adapter<VH>() {
+abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int) :
+    RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
     open var items: MutableList<T> = mutableListOf()
         set(value) {
             this.items.clear()
@@ -19,29 +20,28 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding, VH : BaseBindingView
         }
 
     var layoutInflater: LayoutInflater? = null
-
     var onItemClickListener: OnItemClickListener<T>? = null
-    lateinit var context: Context
+    var context: Context?=null
 
     val isEmpty: Boolean
         get() = itemCount == 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        context = parent.context!!
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<VB> {
+        context = parent.context
         if (layoutInflater == null) {
             layoutInflater = LayoutInflater.from(parent.context)
         }
-        return getViewHolder(
+        return ViewHolder(
             DataBindingUtil.inflate(
                 layoutInflater!!,
-                getRootLayout(),
+                layoutId,
                 parent,
                 false
             ) as VB
         )
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder<VB>, position: Int) {
         if (onItemClickListener != null) {
             holder.itemView.setOnClickListener {
                 onItemClickListener!!.onItemClicked(items[position])
@@ -49,10 +49,9 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding, VH : BaseBindingView
         }
     }
 
-    @LayoutRes
-    abstract fun getRootLayout(): Int
 
-    abstract fun getViewHolder(vb: VB): VH
+    class ViewHolder<VB:ViewDataBinding>(binding: VB) : RecyclerView.ViewHolder(binding.root)
+
 
     override fun getItemCount() = items.size
 
