@@ -11,7 +11,7 @@ import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
 abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int) :
     RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
-    private var onItemClickListener: OnItemClickListener<T>? = null
+    protected var onItemClickListener: OnItemClickListener<T>? = null
     protected  var layoutInflater: LayoutInflater? = null
     protected  var context: Context? = null
 

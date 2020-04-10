@@ -13,7 +13,7 @@ import kotlin.properties.Delegates
 
 abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int) :
     RecyclerView.Adapter<BaseRecyclerAdapterWithDiffUtil.ViewHolder<VB>>() {
-    private var onItemClickListener: OnItemClickListener<T>? = null
+    protected var onItemClickListener: OnItemClickListener<T>? = null
     protected abstract val areItemsTheSameCompare: (T, T) -> Boolean
     protected open val areContentsTheSameCompare: (T, T) -> Boolean = { t1, t2 -> t1 == t2 }
     protected var layoutInflater: LayoutInflater? = null
