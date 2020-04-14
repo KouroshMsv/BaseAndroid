@@ -2,6 +2,8 @@ package dev.kourosh.baseapp
 
 import android.app.Activity
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -23,13 +25,12 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.calligraphy3.CalligraphyUtils
 import io.github.inflationx.viewpump.ViewPump
 import java.text.DecimalFormat
-
+val toneGenerator=ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
 fun generateTone(
     toneType: Int = ToneGenerator.TONE_PROP_ACK,
-    duration: Int = 200,
-    volume: Int = 100
+    duration: Int = 200
 ) {
-    ToneGenerator(AudioManager.STREAM_NOTIFICATION, volume).startTone(toneType, duration)
+    toneGenerator.startTone(toneType, duration)
 }
 
 
@@ -86,5 +87,9 @@ fun Application.initApp(defaultFontPath: String) {
     )
 }
 private val df = DecimalFormat("#.##")
-
-fun Double.decimalFormat() =df.format(this)
+fun Double.decimalFormat() = df.format(this)
+fun String.copyToClipboard(context: Context) {
+    val clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clipData = ClipData.newPlainText("label", this)
+    clipBoard.primaryClip = clipData
+}

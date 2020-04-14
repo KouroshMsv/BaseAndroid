@@ -19,6 +19,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -201,15 +202,6 @@ fun String.encodeBase64() = this.toByteArray().encodeBase64()
 fun String.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 
 
-fun SpannableStringBuilder.appendWithTypeface(
-    string: String,
-    typeface: Int = android.graphics.Typeface.BOLD
-) {
-    val start = length
-    append(string)
-    setSpan(StyleSpan(typeface), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-}
-
 fun sendTextMessage(destinationAddress: String, message: String) {
     SmsManager.getDefault().sendTextMessage(destinationAddress, null, message, null, null)
 }
@@ -353,3 +345,17 @@ inline fun SpannableStringBuilder.bold(
     text: () -> String
 ) = inSpans(StyleSpan(Typeface.BOLD), builderAction = { append(text()) })
 
+
+fun <T> ObservableField<T>.observe(observer: (T?) -> (Unit)) {
+    addOnPropertyChangedCallback(object :
+        androidx.databinding.Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
+            observer(get())
+        }
+    })
+}
+
+const val enter = "\n"
+fun SpannableStringBuilder.enter() = append(enter)
+fun SpannableStringBuilder.halfSpace() = append(halfSpace)
+const val halfSpace = "\u200c"
