@@ -6,7 +6,6 @@ import android.content.res.Resources
 import android.graphics.Typeface
 import android.telephony.SmsManager
 import android.text.Editable
-import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
@@ -347,6 +346,15 @@ inline fun SpannableStringBuilder.bold(
 
 
 fun <T> ObservableField<T>.observe(observer: (T?) -> (Unit)) {
+    addOnPropertyChangedCallback(object :
+        androidx.databinding.Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
+            observer(get())
+        }
+    })
+}
+
+fun ObservableBoolean.observe(observer: (Boolean) -> (Unit)) {
     addOnPropertyChangedCallback(object :
         androidx.databinding.Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
