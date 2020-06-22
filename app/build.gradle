@@ -39,4 +39,5 @@ dependencies {
     implementation project(path: ':baseapp')
     implementation project(path: ':accountmanager')
 
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 }
