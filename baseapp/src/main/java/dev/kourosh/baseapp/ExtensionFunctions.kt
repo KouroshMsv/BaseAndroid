@@ -2,8 +2,14 @@ package dev.kourosh.baseapp
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.graphics.Typeface
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.telephony.SmsManager
 import android.text.Editable
 import android.text.SpannableStringBuilder
@@ -11,6 +17,7 @@ import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
@@ -26,6 +33,8 @@ import dev.kourosh.basedomain.ErrorCode
 import dev.kourosh.basedomain.Result
 import dev.kourosh.basedomain.logE
 import kotlinx.coroutines.*
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -367,3 +376,32 @@ const val enter = "\n"
 fun SpannableStringBuilder.enter() = append(enter)
 fun SpannableStringBuilder.halfSpace() = append(halfSpace)
 const val halfSpace = "\u200c"
+
+
+fun Bitmap.compress(maxWidthOrHeight: Double): Bitmap {
+    val builderString =
+        StringBuilder("width: $width height: $height density: $density byteCount: $byteCount")
+    val biggerIsHeight = height > width
+    val scale =
+        BigDecimal(if (biggerIsHeight) height.toDouble() / width.toDouble() else width.toDouble() / height.toDouble())
+    builderString.append("\n")
+    builderString.append("scale: $scale")
+
+    val max = BigDecimal(maxWidthOrHeight)
+    val width = if (biggerIsHeight) max.divide(scale, 2, RoundingMode.HALF_UP) else max
+    val height = if (biggerIsHeight) max else max.divide(scale, 2, RoundingMode.HALF_UP)
+    val newbitmap = Bitmap.createScaledBitmap(this, width.toInt(), height.toInt(), false)
+    builderString.append("\n")
+    builderString.append("new width: ${newbitmap.width} height: ${newbitmap.height}  byteCount: ${newbitmap.byteCount}")
+    builderString.append("\n")
+    Log.d("Kourosh", builderString.toString())
+    return newbitmap
+}
+
+fun Uri.bitmap(contentResolver: ContentResolver): Bitmap? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, this))
+    } else {
+        MediaStore.Images.Media.getBitmap(contentResolver, this)
+    }
+}
