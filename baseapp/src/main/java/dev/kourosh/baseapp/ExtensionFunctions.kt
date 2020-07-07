@@ -3,12 +3,14 @@ package dev.kourosh.baseapp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.telephony.SmsManager
 import android.text.Editable
@@ -23,19 +25,25 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import dev.kourosh.basedomain.ErrorCode
-import dev.kourosh.basedomain.Result
-import dev.kourosh.basedomain.logE
+import dev.kourosh.basedomain.*
 import kotlinx.coroutines.*
+import java.io.File
+import java.io.IOException
+import java.io.OutputStream
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -103,32 +111,33 @@ fun View.disable() {
             .thumbnail(0.1f)
             .into(this)
 }*/
+fun TextView.getCurrencyFormatListener() = object : TextWatcher {
+    override fun afterTextChanged(s: Editable?) {
+    }
+
+    override fun beforeTextChanged(
+        s: CharSequence?, start: Int, count: Int, after: Int
+    ) {
+    }
+
+    override fun onTextChanged(
+        s: CharSequence?, start: Int, before: Int, count: Int
+    ) {
+        removeTextChangedListener(this)
+        text = if (s?.toString().isNullOrBlank()) {
+            ""
+        } else {
+            s.toString().currencyFormat()
+        }
+        if (this@getCurrencyFormatListener is EditText) {
+            setSelection(text.toString().length)
+        }
+        addTextChangedListener(this)
+    }
+}
 
 fun TextView.currencyFormat() {
-    addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(s: Editable?) {
-        }
-
-        override fun beforeTextChanged(
-            s: CharSequence?, start: Int, count: Int, after: Int
-        ) {
-        }
-
-        override fun onTextChanged(
-            s: CharSequence?, start: Int, before: Int, count: Int
-        ) {
-            removeTextChangedListener(this)
-            text = if (s?.toString().isNullOrBlank()) {
-                ""
-            } else {
-                s.toString().currencyFormat()
-            }
-            if (this@currencyFormat is EditText) {
-                setSelection(text.toString().length)
-            }
-            addTextChangedListener(this)
-        }
-    })
+    addTextChangedListener(getCurrencyFormatListener())
 }
 
 fun String.clearCurrencyFormat() = replace(",", "")
@@ -378,7 +387,7 @@ fun SpannableStringBuilder.halfSpace() = append(halfSpace)
 const val halfSpace = "\u200c"
 
 
-fun Bitmap.compress(maxWidthOrHeight: Double): Bitmap {
+fun Bitmap.compress(maxWidthOrHeight: Int): Bitmap {
     val builderString =
         StringBuilder("width: $width height: $height density: $density byteCount: $byteCount")
     val biggerIsHeight = height > width
@@ -387,7 +396,7 @@ fun Bitmap.compress(maxWidthOrHeight: Double): Bitmap {
     builderString.append("\n")
     builderString.append("scale: $scale")
 
-    val max = BigDecimal(maxWidthOrHeight)
+    val max = BigDecimal(maxWidthOrHeight.toDouble())
     val width = if (biggerIsHeight) max.divide(scale, 2, RoundingMode.HALF_UP) else max
     val height = if (biggerIsHeight) max else max.divide(scale, 2, RoundingMode.HALF_UP)
     val newbitmap = Bitmap.createScaledBitmap(this, width.toInt(), height.toInt(), false)
@@ -404,4 +413,70 @@ fun Uri.bitmap(contentResolver: ContentResolver): Bitmap? {
     } else {
         MediaStore.Images.Media.getBitmap(contentResolver, this)
     }
+}
+
+fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
+    ContextCompat.getColor(itemView.context, id)
+
+
+@Throws(IOException::class)
+fun Fragment.compress(photoURI: Uri,maxWidthOrHeight: Int) {
+    launchIO {
+        val compressedBitmap =
+            photoURI.bitmap(requireActivity().contentResolver)?.run {
+                logI("normal image size= $byteCount")
+                compress(maxWidthOrHeight)
+            }
+        if (compressedBitmap != null) {
+            var outputStream: OutputStream? = null
+            try {
+                outputStream = requireContext().contentResolver.openOutputStream(photoURI)
+                compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            } finally {
+                outputStream?.close()
+            }
+            logI("compressed image size= ${compressedBitmap.byteCount}")
+        }
+    }
+}
+
+
+@Throws(IOException::class)
+fun Fragment.createImageFile(
+    prefix: String = "JPEG"
+): File {
+    // Create an image file name
+    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
+    val storageDir: File = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+    return File.createTempFile(
+        "${prefix}_${timeStamp}", ".jpg",
+        storageDir /* directory */
+    )/*.apply {
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = absolutePath
+    }*/
+}
+
+
+fun Fragment.dispatchTakePictureIntent(
+    authority: String,
+    cameraRequestCode: Int,
+    photoFile: File
+
+): Uri? {
+    var photoURI: Uri? = null
+    Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+        takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
+            photoFile.also {
+                photoURI = FileProvider.getUriForFile(
+                    requireContext(),
+                    authority,
+                    it
+                )
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                startActivityForResult(takePictureIntent, cameraRequestCode)
+            }
+        }
+    }
+    return photoURI!!
 }
