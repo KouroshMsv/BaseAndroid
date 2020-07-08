@@ -442,7 +442,8 @@ fun compress(context: Context, photoURI: Uri, maxWidthOrHeight: Int) {
 
 
 @Throws(IOException::class)
-fun createImageFile(context: Context,
+fun createImageFile(
+    context: Context,
     prefix: String = "JPEG"
 ): File {
     // Create an image file name
@@ -457,26 +458,21 @@ fun createImageFile(context: Context,
     }*/
 }
 
-
+/**
+ * * photoURI =FileProvider.getUriForFile(context, authority, file)
+ */
 fun dispatchTakePictureIntent(
-    activity: Activity, authority: String,
+    activity: Activity,
     cameraRequestCode: Int,
-    photoFile: File
-
-): Uri? {
-    var photoURI: Uri? = null
+    photoFile: File,
+    photoURI: Uri
+) {
     Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
         takePictureIntent.resolveActivity(activity.packageManager)?.also {
             photoFile.also {
-                photoURI = FileProvider.getUriForFile(
-                    activity,
-                    authority,
-                    it
-                )
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 activity.startActivityForResult(takePictureIntent, cameraRequestCode)
             }
         }
     }
-    return photoURI!!
 }
