@@ -3,6 +3,7 @@ package dev.kourosh.baseapp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -31,7 +32,6 @@ import androidx.core.content.FileProvider
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -420,17 +420,17 @@ fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
 
 
 @Throws(IOException::class)
-fun Fragment.compress(photoURI: Uri,maxWidthOrHeight: Int) {
+fun compress(context: Context, photoURI: Uri, maxWidthOrHeight: Int) {
     launchIO {
         val compressedBitmap =
-            photoURI.bitmap(requireActivity().contentResolver)?.run {
+            photoURI.bitmap(context.contentResolver)?.run {
                 logI("normal image size= $byteCount")
                 compress(maxWidthOrHeight)
             }
         if (compressedBitmap != null) {
             var outputStream: OutputStream? = null
             try {
-                outputStream = requireActivity().contentResolver.openOutputStream(photoURI)
+                outputStream = context.contentResolver.openOutputStream(photoURI)
                 compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
             } finally {
                 outputStream?.close()
@@ -442,12 +442,12 @@ fun Fragment.compress(photoURI: Uri,maxWidthOrHeight: Int) {
 
 
 @Throws(IOException::class)
-fun Fragment.createImageFile(
+fun createImageFile(context: Context,
     prefix: String = "JPEG"
 ): File {
     // Create an image file name
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
-    val storageDir: File = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+    val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
     return File.createTempFile(
         "${prefix}_${timeStamp}", ".jpg",
         storageDir /* directory */
@@ -458,23 +458,23 @@ fun Fragment.createImageFile(
 }
 
 
-fun Fragment.dispatchTakePictureIntent(
-    authority: String,
+fun dispatchTakePictureIntent(
+    activity: Activity, authority: String,
     cameraRequestCode: Int,
     photoFile: File
 
 ): Uri? {
     var photoURI: Uri? = null
     Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-        takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
+        takePictureIntent.resolveActivity(activity.packageManager)?.also {
             photoFile.also {
                 photoURI = FileProvider.getUriForFile(
-                    requireActivity(),
+                    activity,
                     authority,
                     it
                 )
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                startActivityForResult(takePictureIntent, cameraRequestCode)
+                activity.startActivityForResult(takePictureIntent, cameraRequestCode)
             }
         }
     }
