@@ -471,7 +471,7 @@ fun Fragment.dispatchTakePictureIntent(
         takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
             photoFile.also {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                activity!!.startActivityForResult(takePictureIntent, cameraRequestCode)
+                startActivityForResult(takePictureIntent, cameraRequestCode)
             }
         }
     }
