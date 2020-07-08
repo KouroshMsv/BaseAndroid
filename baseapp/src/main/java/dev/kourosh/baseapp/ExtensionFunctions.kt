@@ -430,7 +430,7 @@ fun Fragment.compress(photoURI: Uri,maxWidthOrHeight: Int) {
         if (compressedBitmap != null) {
             var outputStream: OutputStream? = null
             try {
-                outputStream = requireContext().contentResolver.openOutputStream(photoURI)
+                outputStream = requireActivity().contentResolver.openOutputStream(photoURI)
                 compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
             } finally {
                 outputStream?.close()
@@ -447,7 +447,7 @@ fun Fragment.createImageFile(
 ): File {
     // Create an image file name
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
-    val storageDir: File = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+    val storageDir: File = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
     return File.createTempFile(
         "${prefix}_${timeStamp}", ".jpg",
         storageDir /* directory */
@@ -469,7 +469,7 @@ fun Fragment.dispatchTakePictureIntent(
         takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
             photoFile.also {
                 photoURI = FileProvider.getUriForFile(
-                    requireContext(),
+                    requireActivity(),
                     authority,
                     it
                 )
