@@ -32,6 +32,7 @@ import androidx.core.content.FileProvider
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -461,17 +462,16 @@ fun createImageFile(
 /**
  * * photoURI =FileProvider.getUriForFile(context, authority, file)
  */
-fun dispatchTakePictureIntent(
-    activity: Activity,
+fun Fragment.dispatchTakePictureIntent(
     cameraRequestCode: Int,
     photoFile: File,
     photoURI: Uri
 ) {
     Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-        takePictureIntent.resolveActivity(activity.packageManager)?.also {
+        takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
             photoFile.also {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                activity.startActivityForResult(takePictureIntent, cameraRequestCode)
+                activity!!.startActivityForResult(takePictureIntent, cameraRequestCode)
             }
         }
     }
