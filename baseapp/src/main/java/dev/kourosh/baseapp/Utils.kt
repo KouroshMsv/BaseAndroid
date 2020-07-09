@@ -25,7 +25,8 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.calligraphy3.CalligraphyUtils
 import io.github.inflationx.viewpump.ViewPump
 import java.text.DecimalFormat
-val toneGenerator=ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
+
+val toneGenerator by lazy { ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100) }
 fun generateTone(
     toneType: Int = ToneGenerator.TONE_PROP_ACK,
     duration: Int = 200
@@ -86,6 +87,7 @@ fun Application.initApp(defaultFontPath: String) {
         ).build()
     )
 }
+
 private val df = DecimalFormat("#.##")
 fun Double.decimalFormat() = df.format(this)
 fun String.copyToClipboard(context: Context) {
