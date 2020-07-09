@@ -32,4 +32,6 @@ abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel
         return binding.root
     }
 
+
+
 }

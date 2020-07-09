@@ -11,10 +11,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import dev.kourosh.baseapp.dialogs.NetworkErrorDialog
 import dev.kourosh.baseapp.enums.MessageType
 import dev.kourosh.baseapp.hideKeyboard
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(
@@ -107,6 +111,10 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
     }
-
+    fun launchIO(block: suspend CoroutineScope.() -> Unit) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            block(this)
+        }
+    }
 
 }

@@ -2,8 +2,13 @@ package dev.kourosh.baseapp.infrastructure.mvvm.activity
 
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import dev.kourosh.baseapp.SingleLiveEvent
 import dev.kourosh.baseapp.infrastructure.mvvm.BaseView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 abstract class BaseActivityViewModel : ViewModel(),LifecycleObserver,  BaseView {
     val errorMessage = SingleLiveEvent<String>()
@@ -36,6 +41,10 @@ abstract class BaseActivityViewModel : ViewModel(),LifecycleObserver,  BaseView 
         hideKeyboard.value = true
     }
 
-
+    fun launchIO(block: suspend CoroutineScope.() -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            block(this)
+        }
+    }
 
 }

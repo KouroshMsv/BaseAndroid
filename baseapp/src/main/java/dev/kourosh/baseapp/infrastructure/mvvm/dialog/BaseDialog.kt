@@ -19,11 +19,15 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import dev.kourosh.baseapp.R
 import dev.kourosh.baseapp.dp
 import dev.kourosh.baseapp.enums.MessageType
 import dev.kourosh.baseapp.infrastructure.mvvm.dialog.BaseDialogViewModel
 import io.github.inflationx.calligraphy3.CalligraphyUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@LayoutRes private val layoutId: Int,
@@ -75,4 +79,9 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
     open fun show(manager: FragmentManager) = super.show(manager, this.javaClass.simpleName)
 
     protected abstract fun initialize()
+    fun launchIO(block: suspend CoroutineScope.() -> Unit) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            block(this)
+        }
+    }
 }
