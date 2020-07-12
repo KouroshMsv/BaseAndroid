@@ -7,10 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.graphics.Typeface
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.telephony.SmsManager
@@ -28,7 +26,6 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
@@ -36,7 +33,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import dev.kourosh.basedomain.*
+import dev.kourosh.basedomain.ErrorCode
+import dev.kourosh.basedomain.Result
+import dev.kourosh.basedomain.logE
+import dev.kourosh.basedomain.logI
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
@@ -409,11 +409,7 @@ fun Bitmap.compress(maxWidthOrHeight: Int): Bitmap {
 }
 
 fun Uri.bitmap(contentResolver: ContentResolver): Bitmap? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, this))
-    } else {
-        MediaStore.Images.Media.getBitmap(contentResolver, this)
-    }
+    return MediaStore.Images.Media.getBitmap(contentResolver, this)
 }
 
 fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
@@ -422,22 +418,20 @@ fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
 
 @Throws(IOException::class)
 fun compress(context: Context, photoURI: Uri, maxWidthOrHeight: Int) {
-    launchIO {
-        val compressedBitmap =
-            photoURI.bitmap(context.contentResolver)?.run {
-                logI("normal image size= $byteCount")
-                compress(maxWidthOrHeight)
-            }
-        if (compressedBitmap != null) {
-            var outputStream: OutputStream? = null
-            try {
-                outputStream = context.contentResolver.openOutputStream(photoURI)
-                compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            } finally {
-                outputStream?.close()
-            }
-            logI("compressed image size= ${compressedBitmap.byteCount}")
+    val compressedBitmap =
+        photoURI.bitmap(context.contentResolver)?.run {
+            logI("normal image size= $byteCount")
+            compress(maxWidthOrHeight)
         }
+    if (compressedBitmap != null) {
+        var outputStream: OutputStream? = null
+        try {
+            outputStream = context.contentResolver.openOutputStream(photoURI)
+            compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        } finally {
+            outputStream?.close()
+        }
+        logI("compressed image size= ${compressedBitmap.byteCount}")
     }
 }
 
@@ -464,15 +458,10 @@ fun createImageFile(
  */
 fun Fragment.dispatchTakePictureIntent(
     cameraRequestCode: Int,
-    photoFile: File,
     photoURI: Uri
 ) {
     Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-        takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
-            photoFile.also {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                startActivityForResult(takePictureIntent, cameraRequestCode)
-            }
-        }
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+        startActivityForResult(takePictureIntent, cameraRequestCode)
     }
 }
