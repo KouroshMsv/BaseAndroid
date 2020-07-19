@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Environment
@@ -26,6 +27,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.BitmapCompat
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
@@ -409,7 +411,7 @@ fun Bitmap.compress(maxWidthOrHeight: Int): Bitmap {
 }
 
 fun Uri.bitmap(contentResolver: ContentResolver): Bitmap? {
-    return MediaStore.Images.Media.getBitmap(contentResolver, this)
+    return BitmapFactory.decodeStream(contentResolver.openInputStream(this))
 }
 
 fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
