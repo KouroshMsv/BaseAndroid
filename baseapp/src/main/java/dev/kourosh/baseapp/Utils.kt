@@ -90,8 +90,8 @@ fun Application.initApp(defaultFontPath: String) {
 
 private val df = DecimalFormat("#.##")
 fun Double.decimalFormat() = df.format(this)
-fun String.copyToClipboard(context: Context) {
+fun String.copyToClipboard(context: Context, label: String = "label") {
     val clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clipData = ClipData.newPlainText("label", this)
-    clipBoard.primaryClip = clipData
+    val clipData = ClipData.newPlainText(label, this)
+    clipBoard.setPrimaryClip(clipData)
 }

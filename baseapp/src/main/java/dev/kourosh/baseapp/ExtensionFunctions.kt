@@ -27,7 +27,6 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.BitmapCompat
 import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
@@ -106,14 +105,6 @@ fun View.disable() {
     this.isEnabled = false
 }
 
-/*fun ImageView.load(dir: Any?, @DrawableRes resourceId: Int = android.R.drawable.ic_menu_gallery, listener: RequestListener<Drawable?>) {
-    Glide.with(context)
-            .load(dir)
-            .listener(listener)
-            .apply(RequestOptions().placeholder(resourceId))
-            .thumbnail(0.1f)
-            .into(this)
-}*/
 fun TextView.getCurrencyFormatListener() = object : TextWatcher {
     override fun afterTextChanged(s: Editable?) {
     }
@@ -175,20 +166,6 @@ val Int.dp get():Int = this * (Resources.getSystem().displayMetrics.densityDpi /
 
 val Float.dp get() = (this * (Resources.getSystem().displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT))
 
-fun FragmentManager.size() = this.backStackEntryCount
-
-fun FragmentManager.clearBackStack() = run {
-    var size = this.size()
-    while (size > 0) {
-        this.popBackStack()
-        size--
-    }
-}
-
-fun FragmentManager.isLastFragment() = size() == 1
-
-fun FragmentManager.isEmptyBackstack() = size() == 0
-
 fun String.isNationalId(): Boolean {
     var zero = ""
     val current: String
@@ -217,8 +194,9 @@ fun String.isNationalId(): Boolean {
 }
 
 fun ByteArray.encodeBase64() = android.util.Base64.encodeToString(this, android.util.Base64.DEFAULT)
-fun ByteArray.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 fun String.encodeBase64() = this.toByteArray().encodeBase64()
+
+fun ByteArray.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 fun String.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 
 
@@ -270,15 +248,15 @@ fun String.numP2E(reverse: Boolean = false): String {
         arrayOf("8", "۸"),
         arrayOf("9", "۹")
     )
-
-    for (num in chars) {
-        str = if (!reverse) {
-            str.replace(num[1], num[0])
-        } else {
-            str.replace(num[0], num[1])
-        }
+    var firstIndex=1
+    var secondIndex=0
+    if (reverse) {
+        firstIndex=0
+        secondIndex=1
     }
-    //    Log.v("numE2P", str);
+    for (num in chars) {
+        str =str.replace(num[firstIndex], num[secondIndex])
+    }
     return str
 }
 
@@ -359,7 +337,7 @@ fun <T> RecyclerView.Adapter<*>.autoNotify(
 @SuppressLint("ResourceAsColor")
 inline fun SpannableStringBuilder.hint(
     text: () -> String
-) = inSpans(ForegroundColorSpan(R.color.hintColor), builderAction = { append(text()) })
+) = inSpans(ForegroundColorSpan(R.color.baseAppHintColor), builderAction = { append(text()) })
 
 inline fun SpannableStringBuilder.bold(
     text: () -> String
@@ -385,9 +363,9 @@ fun ObservableBoolean.observe(observer: (Boolean) -> (Unit)) {
 }
 
 const val enter = "\n"
+const val halfSpace = "\u200c"
 fun SpannableStringBuilder.enter() = append(enter)
 fun SpannableStringBuilder.halfSpace() = append(halfSpace)
-const val halfSpace = "\u200c"
 
 
 fun Bitmap.compress(maxWidthOrHeight: Int): Bitmap {
