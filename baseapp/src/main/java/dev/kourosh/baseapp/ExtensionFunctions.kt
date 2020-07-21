@@ -8,8 +8,10 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.telephony.SmsManager
@@ -31,7 +33,6 @@ import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.basedomain.ErrorCode
@@ -248,14 +249,14 @@ fun String.numP2E(reverse: Boolean = false): String {
         arrayOf("8", "۸"),
         arrayOf("9", "۹")
     )
-    var firstIndex=1
-    var secondIndex=0
+    var firstIndex = 1
+    var secondIndex = 0
     if (reverse) {
-        firstIndex=0
-        secondIndex=1
+        firstIndex = 0
+        secondIndex = 1
     }
     for (num in chars) {
-        str =str.replace(num[firstIndex], num[secondIndex])
+        str = str.replace(num[firstIndex], num[secondIndex])
     }
     return str
 }
@@ -388,8 +389,40 @@ fun Bitmap.compress(maxWidthOrHeight: Int): Bitmap {
     return newbitmap
 }
 
-fun Uri.bitmap(contentResolver: ContentResolver): Bitmap? {
-    return BitmapFactory.decodeStream(contentResolver.openInputStream(this))
+fun Uri.bitmap(
+    contentResolver: ContentResolver,
+    decodeException: OnDecodeBitmapException
+): Bitmap? {
+    var exception1: Exception? = null
+    var exception2: Exception? = null
+    var exception3: Exception? = null
+    val bitmap = try {
+        BitmapFactory.decodeStream(contentResolver.openInputStream(this))
+    } catch (e1: Exception) {
+        exception1 = e1
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, this))
+            } else {
+                MediaStore.Images.Media.getBitmap(contentResolver, this)
+            }
+        } catch (e2: Exception) {
+            exception2 = e2
+            try {
+                MediaStore.Images.Media.getBitmap(contentResolver, this)
+            } catch (e3: Exception) {
+                exception3 = e3
+                null
+            }
+        }
+    }
+    decodeException.onException(exception1, exception2, exception3)
+    return bitmap
+
+}
+
+interface OnDecodeBitmapException {
+    fun onException(e1: Exception?, e2: Exception?, e3: Exception?)
 }
 
 fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
@@ -397,9 +430,12 @@ fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
 
 
 @Throws(IOException::class)
-fun compress(context: Context, photoURI: Uri, maxWidthOrHeight: Int) {
+fun compress(
+    context: Context, photoURI: Uri, maxWidthOrHeight: Int,
+    decodeException: OnDecodeBitmapException
+) {
     val compressedBitmap =
-        photoURI.bitmap(context.contentResolver)?.run {
+        photoURI.bitmap(context.contentResolver, decodeException)?.run {
             logI("normal image size= $byteCount")
             compress(maxWidthOrHeight)
         }
