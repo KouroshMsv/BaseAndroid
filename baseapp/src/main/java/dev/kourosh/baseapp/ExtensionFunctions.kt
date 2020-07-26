@@ -111,12 +111,12 @@ fun TextView.getCurrencyFormatListener() = object : TextWatcher {
     }
 
     override fun beforeTextChanged(
-        s: CharSequence?, start: Int, count: Int, after: Int
+            s: CharSequence?, start: Int, count: Int, after: Int
     ) {
     }
 
     override fun onTextChanged(
-        s: CharSequence?, start: Int, before: Int, count: Int
+            s: CharSequence?, start: Int, before: Int, count: Int
     ) {
         removeTextChangedListener(this)
         text = if (s?.toString().isNullOrBlank()) {
@@ -144,10 +144,10 @@ fun String.currencyFormat(): String {
     return try {
         if (currentString.contains('.')) {
             NumberFormat.getNumberInstance(Locale.ENGLISH)
-                .format(currentString.replace(",", "").toDouble())
+                    .format(currentString.replace(",", "").toDouble())
         } else {
             NumberFormat.getNumberInstance(Locale.ENGLISH)
-                .format(currentString.replace(",", "").toLong())
+                    .format(currentString.replace(",", "").toLong())
         }
     } catch (a: Exception) {
         "0"
@@ -238,16 +238,16 @@ fun String.emptyOrZeroToNull(): String? {
 fun String.numP2E(reverse: Boolean = false): String {
     var str = this
     val chars = arrayOf(
-        arrayOf("0", "۰"),
-        arrayOf("1", "۱"),
-        arrayOf("2", "۲"),
-        arrayOf("3", "۳"),
-        arrayOf("4", "۴"),
-        arrayOf("5", "۵"),
-        arrayOf("6", "۶"),
-        arrayOf("7", "۷"),
-        arrayOf("8", "۸"),
-        arrayOf("9", "۹")
+            arrayOf("0", "۰"),
+            arrayOf("1", "۱"),
+            arrayOf("2", "۲"),
+            arrayOf("3", "۳"),
+            arrayOf("4", "۴"),
+            arrayOf("5", "۵"),
+            arrayOf("6", "۶"),
+            arrayOf("7", "۷"),
+            arrayOf("8", "۸"),
+            arrayOf("9", "۹")
     )
     var firstIndex = 1
     var secondIndex = 0
@@ -270,11 +270,7 @@ fun ObservableBoolean.stop() {
 }
 
 
-suspend fun <T : Any> Result<T>.parseOnMain(
-    loading: ObservableBoolean,
-    success: (data: T) -> Unit,
-    error: (message: String, errorCode: ErrorCode) -> Unit
-) {
+suspend fun <T : Any> Result<T>.parseOnMain(loading: ObservableBoolean, success: (data: T) -> Unit, error: (message: String, errorCode: ErrorCode) -> Unit) {
     when (val result = this) {
         is Result.Success -> {
             loading.stop()
@@ -292,10 +288,7 @@ suspend fun <T : Any> Result<T>.parseOnMain(
     }
 }
 
-suspend fun <T : Any> Result<T>.parseWithoutErrorOnMain(
-    loading: ObservableBoolean,
-    success: (data: T) -> Unit
-) {
+suspend fun <T : Any> Result<T>.parseWithoutErrorOnMain(loading: ObservableBoolean, success: (data: T) -> Unit) {
     when (val result = this) {
         is Result.Success -> {
             loading.stop()
@@ -310,12 +303,7 @@ suspend fun <T : Any> Result<T>.parseWithoutErrorOnMain(
     }
 }
 
-fun <T> RecyclerView.Adapter<*>.autoNotify(
-    oldList: List<T>,
-    newList: List<T>,
-    areItemsTheSameCompare: (T, T) -> Boolean,
-    areContentsTheSameCompare: (T, T) -> Boolean = { t1, t2 -> t1 == t2 }
-) {
+fun <T> RecyclerView.Adapter<*>.autoNotify(oldList: List<T>, newList: List<T>, areItemsTheSameCompare: (T, T) -> Boolean, areContentsTheSameCompare: (T, T) -> Boolean = { t1, t2 -> t1 == t2 }) {
     val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -336,18 +324,14 @@ fun <T> RecyclerView.Adapter<*>.autoNotify(
 
 
 @SuppressLint("ResourceAsColor")
-inline fun SpannableStringBuilder.hint(
-    text: () -> String
-) = inSpans(ForegroundColorSpan(R.color.baseAppHintColor), builderAction = { append(text()) })
+inline fun SpannableStringBuilder.hint(text: () -> String) = inSpans(ForegroundColorSpan(R.color.baseAppHintColor), builderAction = { append(text()) })
 
-inline fun SpannableStringBuilder.bold(
-    text: () -> String
-) = inSpans(StyleSpan(Typeface.BOLD), builderAction = { append(text()) })
+inline fun SpannableStringBuilder.bold(text: () -> String) = inSpans(StyleSpan(Typeface.BOLD), builderAction = { append(text()) })
 
 
 fun <T> ObservableField<T>.observe(observer: (T?) -> (Unit)) {
     addOnPropertyChangedCallback(object :
-        androidx.databinding.Observable.OnPropertyChangedCallback() {
+            androidx.databinding.Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
             observer(get())
         }
@@ -356,7 +340,7 @@ fun <T> ObservableField<T>.observe(observer: (T?) -> (Unit)) {
 
 fun ObservableBoolean.observe(observer: (Boolean) -> (Unit)) {
     addOnPropertyChangedCallback(object :
-        androidx.databinding.Observable.OnPropertyChangedCallback() {
+            androidx.databinding.Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: androidx.databinding.Observable?, propertyId: Int) {
             observer(get())
         }
@@ -371,10 +355,10 @@ fun SpannableStringBuilder.halfSpace() = append(halfSpace)
 
 fun Bitmap.compress(maxWidthOrHeight: Int): Bitmap {
     val builderString =
-        StringBuilder("width: $width height: $height density: $density byteCount: $byteCount")
+            StringBuilder("width: $width height: $height density: $density byteCount: $byteCount")
     val biggerIsHeight = height > width
     val scale =
-        BigDecimal(if (biggerIsHeight) height.toDouble() / width.toDouble() else width.toDouble() / height.toDouble())
+            BigDecimal(if (biggerIsHeight) height.toDouble() / width.toDouble() else width.toDouble() / height.toDouble())
     builderString.append("\n")
     builderString.append("scale: $scale")
 
@@ -389,10 +373,7 @@ fun Bitmap.compress(maxWidthOrHeight: Int): Bitmap {
     return newbitmap
 }
 
-fun Uri.bitmap(
-    contentResolver: ContentResolver,
-    decodeException: OnDecodeBitmapException
-): Bitmap? {
+fun Uri.bitmap(contentResolver: ContentResolver, decodeException: OnDecodeBitmapException): Bitmap? {
     var exception1: Exception? = null
     var exception2: Exception? = null
     var exception3: Exception? = null
@@ -425,20 +406,16 @@ interface OnDecodeBitmapException {
     fun onException(e1: Exception?, e2: Exception?, e3: Exception?)
 }
 
-fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) =
-    ContextCompat.getColor(itemView.context, id)
+fun RecyclerView.ViewHolder.getColor(@ColorRes id: Int) = ContextCompat.getColor(itemView.context, id)
 
 
 @Throws(IOException::class)
-fun compress(
-    context: Context, photoURI: Uri, maxWidthOrHeight: Int,
-    decodeException: OnDecodeBitmapException
-) {
+fun compress(context: Context, photoURI: Uri, maxWidthOrHeight: Int, decodeException: OnDecodeBitmapException) {
     val compressedBitmap =
-        photoURI.bitmap(context.contentResolver, decodeException)?.run {
-            logI("normal image size= $byteCount")
-            compress(maxWidthOrHeight)
-        }
+            photoURI.bitmap(context.contentResolver, decodeException)?.run {
+                logI("normal image size= $byteCount")
+                compress(maxWidthOrHeight)
+            }
     if (compressedBitmap != null) {
         var outputStream: OutputStream? = null
         try {
@@ -453,16 +430,13 @@ fun compress(
 
 
 @Throws(IOException::class)
-fun createImageFile(
-    context: Context,
-    prefix: String = "JPEG"
-): File {
+fun createImageFile(context: Context, prefix: String = "JPEG"): File {
     // Create an image file name
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
     val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
     return File.createTempFile(
-        "${prefix}_${timeStamp}", ".jpg",
-        storageDir /* directory */
+            "${prefix}_${timeStamp}", ".jpg",
+            storageDir /* directory */
     )/*.apply {
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = absolutePath
@@ -472,10 +446,7 @@ fun createImageFile(
 /**
  * * photoURI =FileProvider.getUriForFile(context, authority, file)
  */
-fun Fragment.dispatchTakePictureIntent(
-    cameraRequestCode: Int,
-    photoURI: Uri
-) {
+fun Fragment.dispatchTakePictureIntent(cameraRequestCode: Int, photoURI: Uri) {
     Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
         startActivityForResult(takePictureIntent, cameraRequestCode)

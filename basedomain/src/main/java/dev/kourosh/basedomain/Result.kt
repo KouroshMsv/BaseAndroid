@@ -128,7 +128,8 @@ enum class ErrorCode {
     SERVER_ERROR,
     UNAUTHORIZED,
     REFRESH_TOKEN_ERROR,
-    UNAVAILABLE_ACCOUNT;
+    UNAVAILABLE_ACCOUNT,
+    ANDROID_INTERNAL;
 }
 
 fun <T : Any> Result<T>.bindFailure(mapping: (message: String, errorCode: ErrorCode) -> Result<T>): Result<T> =

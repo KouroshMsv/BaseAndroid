@@ -27,10 +27,7 @@ import io.github.inflationx.viewpump.ViewPump
 import java.text.DecimalFormat
 
 val toneGenerator by lazy { ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100) }
-fun generateTone(
-    toneType: Int = ToneGenerator.TONE_PROP_ACK,
-    duration: Int = 200
-) {
+fun generateTone(toneType: Int = ToneGenerator.TONE_PROP_ACK, duration: Int = 200) {
     toneGenerator.startTone(toneType, duration)
 }
 
@@ -38,13 +35,7 @@ fun generateTone(
 fun Context.vibrate(millisecond: Long = 200, repeat: Int = 1) {
     val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
-        vibrator.vibrate(
-            VibrationEffect.createWaveform(
-                (0..repeat).map { millisecond }.toLongArray(),
-                (0..repeat).map { VibrationEffect.DEFAULT_AMPLITUDE }.toIntArray(),
-                repeat
-            )
-        )
+        vibrator.vibrate(VibrationEffect.createWaveform((0..repeat).map { millisecond }.toLongArray(), (0..repeat).map { VibrationEffect.DEFAULT_AMPLITUDE }.toIntArray(), repeat))
     } else {
         vibrator.vibrate(millisecond)
     }
@@ -58,13 +49,7 @@ fun Activity.openLink(url: String) {
     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }
 
-fun showSnackBar(
-    view: View,
-    context: Context,
-    message: String,
-    type: MessageType,
-    duration: Int = Snackbar.LENGTH_LONG
-) {
+fun showSnackBar(view: View, context: Context, message: String, type: MessageType, duration: Int = Snackbar.LENGTH_LONG) {
     val snackBar = Snackbar.make(view, message, duration)
     snackBar.view.setBackgroundColor(ContextCompat.getColor(context, type.backgroundColor))
     val tv = snackBar.view.findViewById(R.id.snackbar_text) as TextView

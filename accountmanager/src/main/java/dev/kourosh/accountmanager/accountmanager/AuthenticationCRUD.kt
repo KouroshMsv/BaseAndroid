@@ -11,19 +11,9 @@ import dev.kourosh.basedomain.ErrorCode
 import dev.kourosh.basedomain.Result
 import dev.kourosh.basedomain.logE
 
-class AuthenticationCRUD(
-    private val context: Context,
-    private val accountType: String,
-    private val authTokenType: String = "FullAccess"
-) {
+class AuthenticationCRUD(private val context: Context, private val accountType: String, private val authTokenType: String = "FullAccess") {
     private val accountManager = AccountManager.get(context)!!
-
-    fun createOrUpdateAccount(
-        username: String,
-        password: String?,
-        token: String,
-        userData: HashMap<UserDataKeys, String>
-    ) {
+    fun createOrUpdateAccount(username: String, password: String?, token: String, userData: HashMap<UserDataKeys, String>) {
         if (username.isEmpty()) {
             throw IllegalArgumentException("$username not available ")
         }
@@ -49,54 +39,48 @@ class AuthenticationCRUD(
         if (username.isEmpty()) {
             throw IllegalArgumentException("$username not available ")
         }
-        for (account in getAllAccounts()) {
-            if (account.name == username) {
-                return true
-            }
-        }
-        return false
+        return getAccount(username)!=null
     }
 
     fun isAccountValid(username: String, password: String) =
-        getAccount(username) != null && accountManager.getPassword(getAccount(username)) == password
+            getAccount(username) != null && accountManager.getPassword(getAccount(username)) == password
 
     private fun HashMap<UserDataKeys, String>.toBundle(): Bundle {
-        val bundle = Bundle()
-        for ((key, value) in this) {
-            bundle.putString(key.name, value)
+        return Bundle().apply {
+            for ((key, value) in this@toBundle) {
+                putString(key.name, value)
+            }
         }
-        return bundle
     }
 
     private fun updateToken(account: Account, token: String) {
         accountManager.setAuthToken(account, authTokenType, token)
     }
 
-    private fun updateToken(userName: String, token: String) {
-        val account = getAccount(userName)
+    private fun updateToken(username: String, token: String) {
+        val account = getAccount(username) ?: throw IllegalArgumentException("$username not available ")
         accountManager.setAuthToken(account, authTokenType, token)
     }
 
     private fun updateUserData(account: Account, userData: Map<UserDataKeys, String>) {
         for ((key, value) in userData) {
             if (key == UserDataKeys.ACCESS_TOKEN) updateToken(account, value)
-
             accountManager.setUserData(account, key.name, value)
         }
     }
 
-    fun updateUserData(userName: String, userData: Map<UserDataKeys, String>) {
-        getAccount(userName)?.run {
+    fun updateUserData(username: String, userData: Map<UserDataKeys, String>) {
+        getAccount(username)?.apply {
             updateUserData(this, userData)
-        }
+        }?: throw IllegalArgumentException("$username not available ")
 
     }
 
     fun getUserData(account: Account, key: UserDataKeys) =
-        accountManager.getUserData(account, key.name)
+            accountManager.getUserData(account, key.name)
 
-    fun getUserData(userName: String, key: UserDataKeys) =
-        getAccount(userName)?.run { getUserData(this, key) }
+    fun getUserData(username: String, key: UserDataKeys) =
+            getAccount(username)?.run { getUserData(this, key) }
 
     fun getToken(username: String): Result<String> {
         val account = getAccount(username)
@@ -130,19 +114,12 @@ class AuthenticationCRUD(
         }
     }
 
-    private fun isTimeOut(timeOut: String?) = timeOut?.toLong()?:0 <= (System.currentTimeMillis())
+    private fun isTimeOut(timeOut: String?) = timeOut?.toLong() ?: 0 <= (System.currentTimeMillis())
 
-    private fun Account.isUnavailable(): Boolean {
-        for (account in accountManager.accounts) {
-            if (account.name == this.name) return false
-        }
-        return true
-    }
-
-    fun invalidToken(userName: String) {
-        val account = getAccount(userName)
+    fun invalidToken(username: String) {
+        val account = getAccount(username)
         if (account != null)
-            updateUserData(userName, hashMapOf(UserDataKeys.EXPIRE_IN to "0"))
+            updateUserData(username, hashMapOf(UserDataKeys.EXPIRE_IN to "0"))
 
     }
 }
