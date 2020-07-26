@@ -39,7 +39,12 @@ class AuthenticationCRUD(private val context: Context, private val accountType: 
         if (username.isEmpty()) {
             throw IllegalArgumentException("$username not available ")
         }
-        return getAccount(username)!=null
+        for (account in getAllAccounts()) {
+            if (account.name == username) {
+                return true
+            }
+        }
+        return false
     }
 
     fun isAccountValid(username: String, password: String) =
