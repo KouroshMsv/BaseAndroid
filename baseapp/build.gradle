@@ -7,14 +7,12 @@ apply plugin: 'kotlin-kapt'
 group = 'com.github.KouroshMsv'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
-
-    dataBinding.enabled = true
+    compileSdkVersion compileSdk
+    buildToolsVersion buildTools
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 29
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -27,12 +25,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
-        enabled = true
-    }
     compileOptions {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
+    }
+
+    buildFeatures{
+        dataBinding true
     }
     kotlinOptions {
         jvmTarget = '1.8'
