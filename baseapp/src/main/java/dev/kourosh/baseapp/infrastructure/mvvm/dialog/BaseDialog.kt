@@ -17,13 +17,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import dev.kourosh.baseapp.R
 import dev.kourosh.baseapp.dp
 import dev.kourosh.baseapp.enums.MessageType
-import dev.kourosh.baseapp.infrastructure.mvvm.dialog.BaseDialogViewModel
+import dev.kourosh.baseapp.hideKeyboard
 import io.github.inflationx.calligraphy3.CalligraphyUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,12 +36,12 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
         private set
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         vm = ViewModelProvider(this)
-            .get(viewModelInstance::class.java)
+                .get(viewModelInstance::class.java)
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
         binding.setVariable(variable, vm)
@@ -55,24 +53,28 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
         super.onViewCreated(view, savedInstanceState)
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        vm.errorMessage.observe(viewLifecycleOwner, Observer {
-            if (it != null) {
-                showSnackBar(it, MessageType.ERROR)
+        vm.hideKeyboard.observe(this) {
+            if (it) {
+                hideKeyboard(requireActivity())
             }
-        })
+        }
+        vm.messageEvent.observe(this) {
+            if (it != null)
+                showSnackBar(it.message, it.messageType)
+        }
         initialize()
     }
 
     fun showSnackBar(message: String, messageType: MessageType) {
         val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
         val view = toast.view
-        view.setPadding(16.dp,16.dp,16.dp,16.dp)
+        view.setPadding(16.dp, 16.dp, 16.dp, 16.dp)
         ViewCompat.setLayoutDirection(toast.view, ViewCompat.LAYOUT_DIRECTION_RTL)
         val text = view.findViewById<TextView>(android.R.id.message)
         CalligraphyUtils.applyFontToTextView(context, text, "fonts/isM.ttf")
         text.setTextColor(ContextCompat.getColor(context!!, messageType.textColor))
-        view.background=ContextCompat.getDrawable(context!!, messageType.drawable)
-        toast.view=view
+        view.background = ContextCompat.getDrawable(context!!, messageType.drawable)
+        toast.view = view
         toast.show()
     }
 

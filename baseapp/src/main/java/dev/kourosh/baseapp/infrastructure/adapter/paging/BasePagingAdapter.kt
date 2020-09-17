@@ -10,10 +10,7 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(
-    @LayoutRes private val layoutId: Int,
-    diffUtil: DiffUtil.ItemCallback<T>
-) : PagedListAdapter<T, BasePagingAdapter.ViewHolder<VB>>(diffUtil) {
+abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int, diffUtil: DiffUtil.ItemCallback<T>) : PagedListAdapter<T, BasePagingAdapter.ViewHolder<VB>>(diffUtil) {
     protected lateinit var context: Context
         private set
     protected var layoutInflater: LayoutInflater? = null
@@ -22,14 +19,7 @@ abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(
         if (layoutInflater == null) {
             layoutInflater = LayoutInflater.from(context)
         }
-        return ViewHolder(
-            DataBindingUtil.inflate(
-                layoutInflater!!,
-                layoutId,
-                parent,
-                false
-            ) as VB
-        )
+        return ViewHolder(DataBindingUtil.inflate(layoutInflater!!, layoutId, parent, false) as VB)
     }
 
     class ViewHolder<VB : ViewDataBinding>(val binding: VB) : RecyclerView.ViewHolder(binding.root)

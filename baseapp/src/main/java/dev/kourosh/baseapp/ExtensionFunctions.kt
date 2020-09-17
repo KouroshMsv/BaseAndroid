@@ -122,7 +122,7 @@ fun TextView.getCurrencyFormatListener() = object : TextWatcher {
         text = if (s?.toString().isNullOrBlank()) {
             ""
         } else {
-            s.toString().currencyFormat()
+            s.toString().currencyFormat
         }
         if (this@getCurrencyFormatListener is EditText) {
             setSelection(text.toString().length)
@@ -131,33 +131,35 @@ fun TextView.getCurrencyFormatListener() = object : TextWatcher {
     }
 }
 
-fun TextView.currencyFormat() {
+fun TextView.setCurrencyFormat() {
     addTextChangedListener(getCurrencyFormatListener())
 }
 
 fun String.clearCurrencyFormat() = replace(",", "")
 
 
-fun String.currencyFormat(): String {
-    var currentString = this
-    if (currentString.isEmpty()) currentString = "0"
-    return try {
-        if (currentString.contains('.')) {
-            NumberFormat.getNumberInstance(Locale.ENGLISH)
-                    .format(currentString.replace(",", "").toDouble())
-        } else {
-            NumberFormat.getNumberInstance(Locale.ENGLISH)
-                    .format(currentString.replace(",", "").toLong())
+val String.currencyFormat: String
+    get() {
+        var currentString = this
+        if (currentString.isEmpty()) currentString = "0"
+        return try {
+            if (currentString.contains('.')) {
+                NumberFormat.getNumberInstance(Locale.ENGLISH)
+                        .format(currentString.replace(",", "").toDouble())
+            } else {
+                NumberFormat.getNumberInstance(Locale.ENGLISH)
+                        .format(currentString.replace(",", "").toLong())
+            }
+        } catch (a: Exception) {
+            "0"
         }
-    } catch (a: Exception) {
-        "0"
     }
-}
 
-fun String.isMobileNumber(): Boolean {
-    val pattern = "(09)\\d\\d\\d\\d\\d\\d\\d\\d\\d"
-    return Pattern.matches(pattern, this)
-}
+val String.isMobileNumber: Boolean
+    get() {
+        val pattern = "(09)\\d\\d\\d\\d\\d\\d\\d\\d\\d"
+        return Pattern.matches(pattern, this)
+    }
 
 val Long.currencyFormat get() = NumberFormat.getNumberInstance(Locale.ENGLISH).format(this)
 
@@ -167,38 +169,43 @@ val Int.dp get():Int = this * (Resources.getSystem().displayMetrics.densityDpi /
 
 val Float.dp get() = (this * (Resources.getSystem().displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT))
 
-fun String.isNationalId(): Boolean {
-    var zero = ""
-    val current: String
-    when {
-        (length < 10) -> {
-            for (i in 1..(10 - length)) {
-                zero += "0"
+val String.isNationalId: Boolean
+    get() {
+        var zero = ""
+        val current: String
+        when {
+            (length < 10) -> {
+                for (i in 1..(10 - length)) {
+                    zero += "0"
+                }
+                current = "$zero$this"
             }
-            current = "$zero$this"
+
+            (length == 10) -> current = this
+
+            else -> return false
         }
-
-        (length == 10) -> current = this
-
-        else -> return false
+        var sum = 0
+        current.forEachIndexed { i, c ->
+            if (i != 9) sum += (10 - i) * c.toString().toInt()
+        }
+        val control = sum % 11
+        return if (control < 2) {
+            control.toString() == current[9].toString()
+        } else {
+            (11 - control).toString() == current[9].toString()
+        }
     }
-    var sum = 0
-    current.forEachIndexed { i, c ->
-        if (i != 9) sum += (10 - i) * c.toString().toInt()
-    }
-    val control = sum % 11
-    return if (control < 2) {
-        control.toString() == current[9].toString()
-    } else {
-        (11 - control).toString() == current[9].toString()
-    }
-}
 
-fun ByteArray.encodeBase64() = android.util.Base64.encodeToString(this, android.util.Base64.DEFAULT)
-fun String.encodeBase64() = this.toByteArray().encodeBase64()
+val ByteArray.encodeBase64: String
+    get() = android.util.Base64.encodeToString(this, android.util.Base64.DEFAULT)
+val String.encodeBase64: String
+    get() = this.toByteArray().encodeBase64
 
-fun ByteArray.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
-fun String.decodeBase64() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
+val ByteArray.decodeBase64: ByteArray
+    get() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
+val String.decodeBase64: ByteArray
+    get() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 
 
 fun sendTextMessage(destinationAddress: String, message: String) {

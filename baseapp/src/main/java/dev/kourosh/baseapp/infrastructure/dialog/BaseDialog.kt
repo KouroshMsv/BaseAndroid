@@ -7,29 +7,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 
-abstract class BaseDialog : DialogFragment() {
+abstract class BaseDialog(@LayoutRes private val layoutId: Int, private val backgroundTransparent: Boolean = true, private val cancellable: Boolean = false) : DialogFragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) =
-        layoutInflater.inflate(getLayout(), container, false)!!
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return layoutInflater.inflate(layoutId, container, false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isCancelable = false
+        isCancelable = cancellable
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        if (backgroundTransparent)
+            dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         initView(view)
     }
 
     open fun show(manager: FragmentManager) = super.show(manager, this.javaClass.simpleName)
-
-    protected abstract fun getLayout(): Int
 
     protected abstract fun initView(v: View)
 }

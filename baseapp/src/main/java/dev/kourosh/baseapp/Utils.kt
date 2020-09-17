@@ -34,10 +34,10 @@ fun generateTone(toneType: Int = ToneGenerator.TONE_PROP_ACK, duration: Int = 20
 
 fun Context.vibrate(millisecond: Long = 200, repeat: Int = 1) {
     val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    if (VERSION.SDK_INT >= VERSION_CODES.O) {
-        vibrator.vibrate(VibrationEffect.createWaveform((0..repeat).map { millisecond }.toLongArray(), (0..repeat).map { VibrationEffect.DEFAULT_AMPLITUDE }.toIntArray(), repeat))
-    } else {
+    if (VERSION.SDK_INT < VERSION_CODES.O) {
         vibrator.vibrate(millisecond)
+    } else {
+        vibrator.vibrate(VibrationEffect.createWaveform((0..repeat).map { millisecond }.toLongArray(), (0..repeat).map { VibrationEffect.DEFAULT_AMPLITUDE }.toIntArray(), repeat))
     }
 }
 
@@ -64,17 +64,19 @@ private lateinit var defaultFontPath: String
 fun Application.initApp(defaultFontPath: String) {
     dev.kourosh.baseapp.defaultFontPath = defaultFontPath
     ViewPump.init(
-        ViewPump.builder().addInterceptor(
-            CalligraphyInterceptor(
-                CalligraphyConfig.Builder().setDefaultFontPath(defaultFontPath)
-                    .setFontAttrId(R.attr.fontPath).build()
-            )
-        ).build()
+            ViewPump.builder().addInterceptor(
+                    CalligraphyInterceptor(
+                            CalligraphyConfig.Builder().setDefaultFontPath(defaultFontPath)
+                                    .setFontAttrId(R.attr.fontPath).build()
+                    )
+            ).build()
     )
 }
 
 private val df = DecimalFormat("#.##")
-fun Double.decimalFormat() = df.format(this)
+val Double.decimalFormat: String
+    get() = df.format(this)
+
 fun String.copyToClipboard(context: Context, label: String = "label") {
     val clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clipData = ClipData.newPlainText(label, this)

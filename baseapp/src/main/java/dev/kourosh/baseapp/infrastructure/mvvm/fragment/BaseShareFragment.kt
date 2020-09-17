@@ -20,10 +20,10 @@ abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         vm = activity?.run {
             ViewModelProvider(this).get(viewModelInstance::class.java)
-        } ?: throw Exception("Invalid Activity")
+        } ?: error("Invalid Activity")
         lifecycle.addObserver(vm)
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
