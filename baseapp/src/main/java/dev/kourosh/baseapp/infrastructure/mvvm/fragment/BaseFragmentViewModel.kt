@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 abstract class BaseFragmentViewModel : ViewModel(), LifecycleObserver, BaseView {
     internal val messageEvent = SingleLiveEvent<Message>()
     internal val hideKeyboard = SingleLiveEvent<Boolean>()
-    val networkError = SingleLiveEvent<Boolean?>()
+    internal val networkError = SingleLiveEvent<Boolean?>()
     open fun showNetworkError(showCancel: Boolean = true) {
         networkError.value = showCancel
     }
