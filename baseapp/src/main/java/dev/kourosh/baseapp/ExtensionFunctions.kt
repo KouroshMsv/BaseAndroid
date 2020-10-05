@@ -245,16 +245,16 @@ fun String.emptyOrZeroToNull(): String? {
 fun String.numP2E(reverse: Boolean = false): String {
     var str = this
     val chars = arrayOf(
-            arrayOf("0", "۰"),
-            arrayOf("1", "۱"),
-            arrayOf("2", "۲"),
-            arrayOf("3", "۳"),
-            arrayOf("4", "۴"),
-            arrayOf("5", "۵"),
-            arrayOf("6", "۶"),
-            arrayOf("7", "۷"),
-            arrayOf("8", "۸"),
-            arrayOf("9", "۹")
+        arrayOf("0", "۰"),
+        arrayOf("1", "۱"),
+        arrayOf("2", "۲"),
+        arrayOf("3", "۳"),
+        arrayOf("4", "۴"),
+        arrayOf("5", "۵"),
+        arrayOf("6", "۶"),
+        arrayOf("7", "۷"),
+        arrayOf("8", "۸"),
+        arrayOf("9", "۹")
     )
     var firstIndex = 1
     var secondIndex = 0
@@ -277,7 +277,11 @@ fun ObservableBoolean.stop() {
 }
 
 
-suspend fun <T : Any> Result<T>.parseOnMain(loading: ObservableBoolean, success: (data: T) -> Unit, error: (message: String, errorCode: ErrorCode) -> Unit) {
+suspend fun <T : Any> Result<T>.parseOnMain(
+    loading: ObservableBoolean,
+    success: (data: T) -> Unit,
+    error: (message: String, errorCode: ErrorCode) -> Unit
+) {
     when (val result = this) {
         is Result.Success -> {
             loading.stop()
@@ -437,17 +441,13 @@ fun compress(context: Context, photoURI: Uri, maxWidthOrHeight: Int, decodeExcep
 
 
 @Throws(IOException::class)
-fun createImageFile(context: Context, prefix: String = "JPEG"): File {
-    // Create an image file name
+fun createImageFile(
+    context: Context,
+    prefix: String = "JPEG",
+    storageDir: File = context.filesDir
+): File {
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(Date())
-    val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
-    return File.createTempFile(
-            "${prefix}_${timeStamp}", ".jpg",
-            storageDir /* directory */
-    )/*.apply {
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = absolutePath
-    }*/
+    return File(storageDir, "${prefix}_${timeStamp}.jpg")
 }
 
 /**
