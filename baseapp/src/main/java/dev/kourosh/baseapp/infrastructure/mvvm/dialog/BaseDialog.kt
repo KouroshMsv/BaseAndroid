@@ -28,12 +28,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@LayoutRes private val layoutId: Int,
-                                                                         @IdRes private val variable: Int,
-                                                                         private val viewModelInstance: VM) : DialogFragment() {
+abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@LayoutRes private val layoutId: Int, @IdRes private val variable: Int, private val viewModelInstance: VM) : DialogFragment() {
     lateinit var vm: VM
     lateinit var binding: B
         private set
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProvider(this).get(viewModelInstance::class.java)
@@ -46,7 +49,6 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         vm.hideKeyboard.observe(this) {
             if (it) {
