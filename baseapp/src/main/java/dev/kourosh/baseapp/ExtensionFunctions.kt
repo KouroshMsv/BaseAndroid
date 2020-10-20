@@ -13,6 +13,8 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.telephony.SmsManager
 import android.text.Editable
@@ -33,6 +35,8 @@ import androidx.core.text.inSpans
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.basedomain.ErrorCode
@@ -457,5 +461,20 @@ fun Fragment.dispatchTakePictureIntent(cameraRequestCode: Int, photoURI: Uri) {
     Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
         startActivityForResult(takePictureIntent, cameraRequestCode)
+    }
+}
+
+fun ObservableBoolean.inverse() = set(!get())
+fun <T> LiveData<T>.debounce(duration: Long = 250L) = MediatorLiveData<T>().also { mld ->
+    val source = this
+    val handler = Handler(Looper.getMainLooper())
+
+    val runnable = Runnable {
+        mld.value = source.value
+    }
+
+    mld.addSource(source) {
+        handler.removeCallbacks(runnable)
+        handler.postDelayed(runnable, duration)
     }
 }

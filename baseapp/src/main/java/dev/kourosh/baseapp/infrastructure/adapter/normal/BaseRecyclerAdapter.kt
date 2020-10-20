@@ -9,8 +9,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
-abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int, private val autoAssignRootClickListener: Boolean = true) :
-        RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
+abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int, private val autoAssignRootClickListener: Boolean = true) : RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
     protected var onItemClickListener: OnItemClickListener<T>? = null
     fun setOnItemClickListener(onClicked: (T) -> (Unit)) {
         onItemClickListener = object : OnItemClickListener<T> {
@@ -25,8 +24,7 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
 
     open var items: MutableList<T> = mutableListOf()
         set(value) {
-            this.items.clear()
-            this.items.addAll(value)
+            field = value
             notifyDataSetChanged()
         }
 
