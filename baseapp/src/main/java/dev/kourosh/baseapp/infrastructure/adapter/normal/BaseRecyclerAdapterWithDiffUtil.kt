@@ -22,7 +22,7 @@ abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding>(@LayoutR
         autoNotify(oldList, newList, areItemsTheSameCompare, areContentsTheSameCompare)
     }
 
-    var withAutoAssignClickListener: Boolean = true
+    open var withAutoAssignClickListener: Boolean = true
     val isEmpty: Boolean
         get() = itemCount == 0
 
