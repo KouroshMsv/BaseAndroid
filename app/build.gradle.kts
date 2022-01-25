@@ -16,6 +16,7 @@ android {
     compileSdk = compileSdkVer.toInt()
     buildToolsVersion = buildToolsVer
     defaultConfig {
+        applicationId ="dev.kourosh.baseandroid"
         minSdk=minSdkVer.toInt()
         targetSdk=targetSdkVer.toInt()
     }
