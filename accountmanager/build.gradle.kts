@@ -8,7 +8,7 @@ group = "com.github.KouroshMsv"
 afterEvaluate {
     publishing {
         publications {
-            create("release", MavenPublication::class.java) {
+            create("release", MavenPublication::class) {
 
                 from(components.getByName("release"))
                 groupId = "com.github.KouroshMsv"
@@ -53,4 +53,3 @@ dependencies {
     implementation(project(":basedomain"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines}")
 }
-apply(plugin = "com.github.dcendents.android-maven")
