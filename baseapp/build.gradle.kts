@@ -66,3 +66,4 @@ dependencies {
     implementation(project(":basedomain"))
 
 }
+apply(plugin = "com.github.dcendents.android-maven")

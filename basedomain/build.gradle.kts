@@ -43,3 +43,4 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines}")
 }
+apply(plugin = "com.github.dcendents.android-maven")

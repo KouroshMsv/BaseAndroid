@@ -41,3 +41,4 @@ dependencies {
     implementation(project(":basedomain"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines}")
 }
+apply(plugin = "com.github.dcendents.android-maven")
