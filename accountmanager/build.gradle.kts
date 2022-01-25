@@ -12,8 +12,8 @@ afterEvaluate {
 
                 from(components.getByName("release"))
                 groupId = "com.github.KouroshMsv"
-                artifactId = "final"
-                version = "1.9.9"
+                artifactId = "accountmanager"
+                version = "1.9.11"
             }
         }
     }

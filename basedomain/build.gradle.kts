@@ -7,12 +7,12 @@ plugins {
 afterEvaluate {
     publishing {
         publications {
-            create("release", MavenPublication::class.java) {
+            create("release", MavenPublication::class) {
 
                 from(components.getByName("release"))
                 groupId = "com.github.KouroshMsv"
-                artifactId = "final"
-                version = "1.9.9"
+                artifactId = "basedomain"
+                version = "1.9.11"
             }
         }
     }
