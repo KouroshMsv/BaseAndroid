@@ -1,9 +1,22 @@
 plugins {
     id("com.android.library")
+    id("maven-publish")
     kotlin("android")
 
 }
+afterEvaluate {
+    publishing {
+        publications {
+            create("release", MavenPublication::class.java) {
 
+                from(components.getByName("release"))
+                groupId = "com.github.KouroshMsv"
+                artifactId = "final"
+                version = "1.9.9"
+            }
+        }
+    }
+}
 val kotlinVersion: String by project
 val minSdkVer: String  by project
 val targetSdkVer: String  by project
