@@ -44,7 +44,7 @@ abstract class BaseRecyclerAdapterWithDiffUtil<T, VB : ViewDataBinding>(@LayoutR
     override fun onBindViewHolder(holder: ViewHolder<VB>, position: Int) {
         if (onItemClickListener != null && withAutoAssignClickListener) {
             holder.itemView.setOnClickListener {
-                onItemClickListener?.onItemClicked(items[holder.adapterPosition])
+                onItemClickListener?.onItemClicked(items[holder.bindingAdapterPosition])
             }
         }
     }

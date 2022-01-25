@@ -101,5 +101,10 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(@La
             block(this)
         }
     }
+    fun launchMain(block: suspend CoroutineScope.() -> Unit) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            block(this)
+        }
+    }
 
 }

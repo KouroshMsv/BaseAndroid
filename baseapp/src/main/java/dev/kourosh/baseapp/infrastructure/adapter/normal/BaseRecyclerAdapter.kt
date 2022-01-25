@@ -24,8 +24,9 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
 
     open var items: MutableList<T> = mutableListOf()
         set(value) {
+            val itemsSize=value.size
             field = value
-            notifyDataSetChanged()
+            notifyItemRangeInserted(0,itemsSize)
         }
 
     val isEmpty: Boolean
@@ -42,7 +43,7 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
     override fun onBindViewHolder(holder: ViewHolder<VB>, position: Int) {
         if (onItemClickListener != null && autoAssignRootClickListener) {
             holder.itemView.setOnClickListener {
-                onItemClickListener!!.onItemClicked(items[holder.adapterPosition])
+                onItemClickListener?.onItemClicked(items[holder.bindingAdapterPosition])
             }
         }
     }
@@ -67,8 +68,9 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
     }
 
     open fun clear() {
+        val itemLength=items.size
         items.clear()
-        notifyDataSetChanged()
+        notifyItemRangeRemoved(0,itemLength)
     }
 
     open fun remove(item: T) {

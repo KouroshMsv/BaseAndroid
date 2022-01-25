@@ -7,22 +7,29 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.google.android.material.snackbar.Snackbar
 import dev.kourosh.baseapp.enums.MessageType
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
+    private val btn: AppCompatButton by lazy {
+        findViewById(R.id.btn)
+    }
+    private val root: View by lazy {
+        findViewById(R.id.root)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btn.setOnClickListener {
-            showSnackBar(btn, applicationContext, "Kourosh", MessageType.INFO)
+            showSnackBar(root, applicationContext, "Kourosh", MessageType.INFO)
         }
     }
+
     fun showSnackBar(view: View, context: Context, message: String, type: MessageType, duration: Int = Snackbar.LENGTH_LONG) {
         val snackBar = Snackbar.make(view, message, duration)
         snackBar.view.setBackgroundColor(ContextCompat.getColor(context, type.backgroundColor))
