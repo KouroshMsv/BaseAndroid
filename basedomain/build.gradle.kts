@@ -30,11 +30,11 @@ val sourceCompatibilityVersion: String by project
 
 
 android {
-    compileSdk = 32
-    buildToolsVersion = "32.0.0"
+    compileSdk = compileSdkVer.toInt()
+    buildToolsVersion = buildToolsVer
     defaultConfig {
-        minSdk=21
-        targetSdk=32
+        minSdk=minSdkVer.toInt()
+        targetSdk=targetSdkVer.toInt()
     }
 
     buildTypes {
