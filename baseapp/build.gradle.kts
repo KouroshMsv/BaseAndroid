@@ -12,11 +12,12 @@ afterEvaluate {
                 from(components.getByName("release"))
                 groupId = "com.github.KouroshMsv"
                 artifactId = "baseapp"
-                version = "1.9.11"
+                version = libVersion
             }
         }
     }
 }
+val libVersion: String by project
 val kotlinVersion: String by project
 val minSdkVer: String  by project
 val targetSdkVer: String  by project
@@ -25,7 +26,6 @@ val buildToolsVer: String  by project
 val coroutines: String by project
 val appcompat: String by project
 val liveData: String by project
-val sourceCompatibilityVersion: String by project
 group = "com.github.KouroshMsv"
 
 android {
@@ -43,8 +43,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility=JavaVersion.VERSION_1_8
-        targetCompatibility=JavaVersion.VERSION_1_8
+        sourceCompatibility=JavaVersion.VERSION_11
+        targetCompatibility=JavaVersion.VERSION_11
 
 
 
@@ -53,7 +53,7 @@ android {
             dataBinding = true
         }
         kotlinOptions {
-            jvmTarget ="1.8"
+            jvmTarget ="11"
         }
     }
 }

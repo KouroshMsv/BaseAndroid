@@ -10,7 +10,6 @@ val compileSdkVer: String   by project
 val buildToolsVer: String  by project
 val coroutines: String by project
 val appcompat: String by project
-val sourceCompatibilityVersion: String by project
 
 android {
     compileSdk = compileSdkVer.toInt()
@@ -28,11 +27,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility=JavaVersion.VERSION_1_8
-        targetCompatibility=JavaVersion.VERSION_1_8
+        sourceCompatibility=JavaVersion.VERSION_11
+        targetCompatibility=JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
