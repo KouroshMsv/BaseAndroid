@@ -39,10 +39,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import dev.kourosh.basedomain.ErrorCode
-import dev.kourosh.basedomain.Result
-import dev.kourosh.basedomain.logE
-import dev.kourosh.basedomain.logI
+import dev.kourosh.basedomain.*
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
@@ -212,13 +209,9 @@ val String.decodeBase64: ByteArray
     get() = android.util.Base64.decode(this, android.util.Base64.DEFAULT)
 
 
-fun sendTextMessage(destinationAddress: String, message: String) {
-    SmsManager.getDefault().sendTextMessage(destinationAddress, null, message, null, null)
-}
 
-
-fun launchMain(block: suspend CoroutineScope.() -> Unit) {
-    GlobalScope.launch(Dispatchers.Main) {
+fun CoroutineScope.launchMain(block: suspend CoroutineScope.() -> Unit) {
+    launch(Dispatchers.Main) {
         block(this)
     }
 }

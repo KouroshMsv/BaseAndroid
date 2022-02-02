@@ -24,7 +24,7 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(@La
     lateinit var binding: B
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        vm = ViewModelProvider(this).get(viewModelInstance::class.java)
+        vm = ViewModelProvider(this)[viewModelInstance::class.java]
         lifecycle.addObserver(vm)
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this

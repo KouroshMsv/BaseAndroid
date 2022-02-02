@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int, diffUtil: DiffUtil.ItemCallback<T>) : PagedListAdapter<T, BasePagingAdapter.ViewHolder<VB>>(diffUtil) {
+abstract class BasePagingAdapter<T : Any, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int, diffUtil: DiffUtil.ItemCallback<T>) : PagingDataAdapter<T, BasePagingAdapter.ViewHolder<VB>>(diffUtil) {
     protected lateinit var context: Context
         private set
     protected var layoutInflater: LayoutInflater? = null

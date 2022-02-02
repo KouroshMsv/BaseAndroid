@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(@LayoutRes private val layoutId: Int, @IdRes private val variable: Int, private val viewModelInstance: VM) : AppCompatActivity() {
 
     protected val vm: VM by lazy {
-        ViewModelProvider(this).get(viewModelInstance::class.java)
+        ViewModelProvider(this)[viewModelInstance::class.java]
     }
 
     protected lateinit var binding: B

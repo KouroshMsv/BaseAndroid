@@ -22,7 +22,7 @@ abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel
         savedInstanceState: Bundle?
     ): View {
         vm = activity?.run {
-            ViewModelProvider(this).get(viewModelInstance::class.java)
+            ViewModelProvider(this)[viewModelInstance::class.java]
         } ?: error("Invalid Activity")
         lifecycle.addObserver(vm)
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
