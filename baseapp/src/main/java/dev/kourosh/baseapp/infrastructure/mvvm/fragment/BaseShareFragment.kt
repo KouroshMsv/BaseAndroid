@@ -25,7 +25,7 @@ abstract class BaseShareFragment<B : ViewDataBinding, VM : BaseFragmentViewModel
             ViewModelProvider(this)[viewModelInstance::class.java]
         } ?: error("Invalid Activity")
         lifecycle.addObserver(vm)
-        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
+        _binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
         binding.setVariable(variable, vm)
         binding.executePendingBindings()

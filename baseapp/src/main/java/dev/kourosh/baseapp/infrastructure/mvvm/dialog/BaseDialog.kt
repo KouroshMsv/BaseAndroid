@@ -37,8 +37,10 @@ import kotlinx.coroutines.launch
 
 abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@LayoutRes private val layoutId: Int, @IdRes private val variable: Int, private val viewModelInstance: VM) : DialogFragment() {
     protected lateinit var vm: VM
-    protected lateinit var binding: B
-        private set
+    protected var _binding: B? = null
+
+    val binding: B
+        get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +49,7 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProvider(this)[viewModelInstance::class.java]
-        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
+        _binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
         binding.setVariable(variable, vm)
         binding.executePendingBindings()
@@ -67,6 +69,12 @@ abstract class BaseDialog<B : ViewDataBinding, VM : BaseDialogViewModel>(@Layout
                 showSnackBar(it.message, it.messageType)
         }
         initialize()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding?.unbind()
+        _binding = null
     }
 
     protected fun showSnackBar(message: String, messageType: MessageType) {

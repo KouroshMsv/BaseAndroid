@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
 abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int, private val autoAssignRootClickListener: Boolean = true) : RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
+
     protected var onItemClickListener: OnItemClickListener<T>? = null
+
     fun setOnItemClickListener(onClicked: (T) -> (Unit)) {
         onItemClickListener = object : OnItemClickListener<T> {
             override fun onItemClicked(item: T) {
@@ -22,12 +24,18 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
     protected var layoutInflater: LayoutInflater? = null
     protected var context: Context? = null
 
-    open var items: MutableList<T> = mutableListOf()
-        set(value) {
-            val itemsSize=value.size
-            field = value
-            notifyItemRangeInserted(0,itemsSize)
-        }
+    protected var elements: MutableList<T> = mutableListOf()
+
+    open fun setItems(items: List<T>) {
+        val itemsSize = items.size
+        this.elements.clear()
+        this.elements.addAll(items)
+        notifyItemRangeInserted(0, itemsSize)
+    }
+
+    open fun getItems(): List<T> {
+        return elements
+    }
 
     val isEmpty: Boolean
         get() = itemCount == 0
@@ -43,40 +51,40 @@ abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private v
     override fun onBindViewHolder(holder: ViewHolder<VB>, position: Int) {
         if (onItemClickListener != null && autoAssignRootClickListener) {
             holder.itemView.setOnClickListener {
-                onItemClickListener?.onItemClicked(items[holder.bindingAdapterPosition])
+                onItemClickListener?.onItemClicked(elements[holder.bindingAdapterPosition])
             }
         }
     }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount() = elements.size
 
 
     open fun add(item: T) {
-        items.add(item)
-        notifyItemInserted(items.size - 1)
+        elements.add(item)
+        notifyItemInserted(elements.size - 1)
     }
 
     open fun addFirst(item: T) {
-        items.add(0, item)
+        elements.add(0, item)
         notifyItemInserted(0)
 
     }
 
     open fun addAll(items: List<T>) {
-        this.items.addAll(items)
-        notifyItemRangeInserted(this.items.size - items.size, items.size)
+        this.elements.addAll(items)
+        notifyItemRangeInserted(this.elements.size - items.size, items.size)
     }
 
     open fun clear() {
-        val itemLength=items.size
-        items.clear()
-        notifyItemRangeRemoved(0,itemLength)
+        val itemLength = elements.size
+        elements.clear()
+        notifyItemRangeRemoved(0, itemLength)
     }
 
     open fun remove(item: T) {
-        val position = items.indexOf(item)
+        val position = elements.indexOf(item)
         if (position > -1) {
-            items.removeAt(position)
+            elements.removeAt(position)
             notifyItemRemoved(position)
         }
     }

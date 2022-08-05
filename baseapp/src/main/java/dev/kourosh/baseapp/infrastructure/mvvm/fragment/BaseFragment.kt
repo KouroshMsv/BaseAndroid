@@ -21,12 +21,15 @@ import kotlinx.coroutines.launch
 abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(@LayoutRes private val layoutId: Int, @IdRes private val variable: Int, private val viewModelInstance: VM) : Fragment() {
 
     lateinit var vm: VM
-    lateinit var binding: B
+    protected var _binding: B? = null
+
+    val binding: B
+        get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProvider(this)[viewModelInstance::class.java]
         lifecycle.addObserver(vm)
-        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
+        _binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
         binding.setVariable(variable, vm)
         binding.executePendingBindings()
@@ -68,6 +71,12 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseFragmentViewModel>(@La
 
     fun showSnackBar(message: String, messageType: MessageType) {
         dev.kourosh.baseapp.showSnackBar(binding.root, requireContext(), message, messageType)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding?.unbind()
+        _binding = null
     }
 
     abstract fun observeVMVariable()

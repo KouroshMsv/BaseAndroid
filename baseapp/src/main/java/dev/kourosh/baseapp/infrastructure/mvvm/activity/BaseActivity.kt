@@ -24,8 +24,11 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(@La
         ViewModelProvider(this)[viewModelInstance::class.java]
     }
 
-    protected lateinit var binding: B
-        private set
+    private var _binding: B? = null
+
+    protected val binding: B
+        get() = _binding!!
+
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +75,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(@La
     }
 
     private fun bind() {
-        binding = DataBindingUtil.setContentView(this, layoutId)
+        _binding = DataBindingUtil.setContentView(this, layoutId)
         binding.lifecycleOwner = this
         binding.setVariable(variable, vm)
         binding.executePendingBindings()
@@ -88,6 +91,11 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseActivityViewModel>(@La
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding?.unbind()
+        _binding = null
+    }
     abstract fun observeVMVariable()
     abstract fun onNetworkErrorTryAgain()
     abstract fun onNetworkErrorCancel()
