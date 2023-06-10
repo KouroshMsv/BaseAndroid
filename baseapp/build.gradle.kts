@@ -73,7 +73,7 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines}")
     implementation("io.github.inflationx:calligraphy3:3.1.1")
-    implementation("io.github.inflationx:viewpump:2.1.1")
+    implementation("io.github.inflationx:viewpump:2.0.3")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation(project(":basedomain"))
 
