@@ -50,6 +50,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    namespace = "dev.kourosh.basedomain"
 }
 
 dependencies {
