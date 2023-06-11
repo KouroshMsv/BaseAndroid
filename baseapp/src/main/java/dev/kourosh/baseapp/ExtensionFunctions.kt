@@ -12,11 +12,9 @@ import android.graphics.ImageDecoder
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.telephony.SmsManager
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
