@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     fun showSnackBar(view: View, context: Context, message: String, type: MessageType, duration: Int = Snackbar.LENGTH_LONG) {
         val snackBar = Snackbar.make(view, message, duration)
         snackBar.view.setBackgroundColor(ContextCompat.getColor(context, type.backgroundColor))
-        val tv = snackBar.view.findViewById(dev.kourosh.baseapp.R.id.snackbar_text) as TextView
+        val tv = snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
         tv.setTextColor(ContextCompat.getColor(context, type.textColor))
         val params = snackBar.view.layoutParams as FrameLayout.LayoutParams
         params.gravity = Gravity.TOP

@@ -52,7 +52,7 @@ fun Activity.openLink(url: String) {
 fun showSnackBar(view: View, context: Context, message: String, type: MessageType, duration: Int = Snackbar.LENGTH_LONG) {
     val snackBar = Snackbar.make(view, message, duration)
     snackBar.view.setBackgroundColor(ContextCompat.getColor(context, type.backgroundColor))
-    val tv = snackBar.view.findViewById(R.id.snackbar_text) as TextView
+    val tv = snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
     tv.setTextColor(ContextCompat.getColor(context, type.textColor))
     CalligraphyUtils.applyFontToTextView(context, tv, defaultFontPath)
     ViewCompat.setLayoutDirection(snackBar.view, ViewCompat.LAYOUT_DIRECTION_RTL)
@@ -67,7 +67,7 @@ fun Application.initApp(defaultFontPath: String) {
             ViewPump.builder().addInterceptor(
                     CalligraphyInterceptor(
                             CalligraphyConfig.Builder().setDefaultFontPath(defaultFontPath)
-                                    .setFontAttrId(R.attr.fontPath).build()
+                                    .setFontAttrId(io.github.inflationx.calligraphy3.R.attr.fontPath).build()
                     )
             ).build()
     )
