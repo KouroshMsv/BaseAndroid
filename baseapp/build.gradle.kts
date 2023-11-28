@@ -43,15 +43,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility=JavaVersion.VERSION_11
-        targetCompatibility=JavaVersion.VERSION_11
+        sourceCompatibility=JavaVersion.VERSION_17
+        targetCompatibility=JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding = true
         dataBinding = true
     }
     kotlinOptions {
-        jvmTarget ="11"
+        jvmTarget ="17"
     }
     namespace = "dev.kourosh.baseapp"
 }
@@ -59,7 +59,7 @@ dependencies {
     implementation((fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar")))))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     implementation("androidx.appcompat:appcompat:${appcompat}")
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.paging:paging-runtime-ktx:3.1.1")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${liveData}")
@@ -70,7 +70,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-common-java8:${liveData}")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
 
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines}")
     implementation("io.github.inflationx:calligraphy3:3.1.1")
     implementation("io.github.inflationx:viewpump:2.0.3")

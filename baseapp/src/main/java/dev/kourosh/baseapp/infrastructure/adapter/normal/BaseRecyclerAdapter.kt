@@ -9,7 +9,10 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import dev.kourosh.baseapp.infrastructure.adapter.OnItemClickListener
 
-abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(@LayoutRes private val layoutId: Int, private val autoAssignRootClickListener: Boolean = true) : RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
+abstract class BaseRecyclerAdapter<T, VB : ViewDataBinding>(
+    @LayoutRes private val layoutId: Int,
+    private val autoAssignRootClickListener: Boolean = true
+) : RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder<VB>>() {
 
     protected var onItemClickListener: OnItemClickListener<T>? = null
 
