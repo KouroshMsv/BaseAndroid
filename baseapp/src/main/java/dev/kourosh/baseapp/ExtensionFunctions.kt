@@ -425,7 +425,7 @@ fun compress(context: Context, photoURI: Uri, maxWidthOrHeight: Int, decodeExcep
     if (compressedBitmap != null) {
         var outputStream: OutputStream? = null
         try {
-            outputStream = context.contentResolver.openOutputStream(photoURI)
+            outputStream = context.contentResolver.openOutputStream(photoURI)!!
             compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         } finally {
             outputStream?.close()
